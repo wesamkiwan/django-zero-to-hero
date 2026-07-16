@@ -54,7 +54,7 @@ Check items off as you complete them. Progress is tracked here and in commit his
 - [x] **16 — Configuration, Docker & Deployment**
       Environment-based settings, Docker & docker-compose, PostgreSQL, Gunicorn/Nginx,
       CI/CD with GitHub Actions, deploying Atlas live.
-- [ ] **17 — Git/Team Workflow, System Design & Job Readiness (Capstone)**
+- [x] **17 — Git/Team Workflow, System Design & Job Readiness (Capstone)**
       Professional Git workflow, architecture trade-offs at scale, interview prep,
       presenting Atlas as a portfolio piece.
 

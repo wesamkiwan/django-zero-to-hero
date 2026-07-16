@@ -5,7 +5,17 @@ inventory management + CRM platform. This app evolves module by module;
 this README always reflects its *current* state (check git history for how
 it got here).
 
-## Current state (as of Module 16)
+**For anyone evaluating this as a portfolio piece:** this is a complete,
+tested, containerized Django application — a custom data model and
+admin, full CRUD, role-based auth, a REST API, 75 automated tests at 94%
+coverage, background/scheduled tasks (Celery), real-world features
+(uploads, PDFs, exports, in-app notifications), security hardening
+verified by `manage.py check --deploy`, and a Docker + Postgres +
+Nginx + CI deployment — grown incrementally, one real commit per
+module (`git log --oneline`), not one giant initial commit. See Module
+17's lesson for the architecture trade-offs made along the way and why.
+
+## Current state (as of Module 17 — course complete)
 
 - Project `config/`, apps: `accounts`, `pages`, `catalog`, `customers`, `orders`.
 - Real data model, backed by migrations:
