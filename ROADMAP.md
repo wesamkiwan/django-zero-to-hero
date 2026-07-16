@@ -27,7 +27,7 @@ Check items off as you complete them. Progress is tracked here and in commit his
 - [x] **04 — Models & the ORM**
       Defining models, migrations, relationships (FK/M2M/O2O), QuerySets, managers.
       Atlas gets its real data model: products, categories, customers, suppliers, orders.
-- [ ] **05 — Django Admin Mastery**
+- [x] **05 — Django Admin Mastery**
       Customizing ModelAdmin, inlines, list filters/search, actions, admin permissions.
 - [ ] **06 — Forms & Function-Based Views (CRUD)**
       Forms, ModelForms, validation, CSRF, building full CRUD by hand.
