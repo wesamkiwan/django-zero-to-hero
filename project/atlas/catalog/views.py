@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
@@ -32,9 +33,10 @@ class ProductDetailView(DetailView):
     # which is exactly what product_detail.html already expects.
 
 
-class ProductCreateView(CreateView):
+class ProductCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Product
     form_class = ProductForm
+    permission_required = "catalog.add_product"
     # success_url not set: CreateView falls back to self.object.get_absolute_url()
     # automatically — the exact same redirect target the FBV version used.
 
@@ -49,9 +51,10 @@ class ProductCreateView(CreateView):
         return response
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
+    permission_required = "catalog.change_product"
     # Same story: no success_url needed, get_absolute_url() covers it.
 
     def get_context_data(self, **kwargs):
@@ -65,8 +68,9 @@ class ProductUpdateView(UpdateView):
         return response
 
 
-class ProductDeleteView(DeleteView):
+class ProductDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Product
+    permission_required = "catalog.delete_product"
     success_url = reverse_lazy("catalog:product_list")
 
     def delete(self, request, *args, **kwargs):

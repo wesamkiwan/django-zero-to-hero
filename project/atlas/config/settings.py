@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Local apps
+    'accounts',
     'pages',
     'catalog',
     'customers',
@@ -133,3 +134,12 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 # Default primary key field type
 # https://docs.djangoproject.com/en/6.0/ref/models/fields/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Our own User model, swapped in via Module 08 — see accounts/models.py.
+# This MUST be set before the first migrate() that touches the user model;
+# see the Module 08 lesson for what goes wrong if you change it afterwards.
+AUTH_USER_MODEL = 'accounts.User'
+
+LOGIN_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = 'pages:home'
+LOGOUT_REDIRECT_URL = 'pages:home'

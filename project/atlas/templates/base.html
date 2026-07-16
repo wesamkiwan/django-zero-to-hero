@@ -16,6 +16,16 @@
                 <a href="{% url 'pages:home' %}"{% if request.resolver_match.view_name == 'pages:home' %} class="active"{% endif %}>Home</a>
                 <a href="{% url 'catalog:product_list' %}"{% if 'catalog:' in request.resolver_match.view_name %} class="active"{% endif %}>Products</a>
                 <a href="{% url 'pages:about' %}"{% if request.resolver_match.view_name == 'pages:about' %} class="active"{% endif %}>About</a>
+                {% if user.is_authenticated %}
+                    <span class="nav-user">{{ user.username }} ({{ user.role }})</span>
+                    <form method="post" action="{% url 'accounts:logout' %}" class="nav-logout-form">
+                        {% csrf_token %}
+                        <button type="submit" class="nav-link-button">Log out</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}">Log in</a>
+                    <a href="{% url 'accounts:signup' %}">Sign up</a>
+                {% endif %}
             </nav>
         </div>
     </header>

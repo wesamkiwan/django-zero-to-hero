@@ -33,7 +33,7 @@ Check items off as you complete them. Progress is tracked here and in commit his
       Forms, ModelForms, validation, CSRF, building full CRUD by hand.
 - [x] **07 — Class-Based Views & Generic Views**
       ListView/DetailView/CreateView/UpdateView/DeleteView, mixins, when to use CBVs vs FBVs.
-- [ ] **08 — Authentication, Authorization & Permissions**
+- [x] **08 — Authentication, Authorization & Permissions**
       Login/logout/signup, custom User model, groups & permissions, role-based access
       (staff / manager / sales rep / customer) for Atlas.
 - [ ] **09 — Templates & Frontend Polish**

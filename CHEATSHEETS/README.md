@@ -14,6 +14,7 @@ while the course is still being written.
 - [05 — Django Admin Mastery](../modules/05-django-admin-mastery/cheatsheet.md)
 - [06 — Forms & Function-Based Views (CRUD)](../modules/06-forms-function-based-views/cheatsheet.md)
 - [07 — Class-Based Views & Generic Views](../modules/07-class-based-views/cheatsheet.md)
+- [08 — Authentication, Authorization & Permissions](../modules/08-authentication-authorization/cheatsheet.md)
 
 ## Overall cheat sheet
 

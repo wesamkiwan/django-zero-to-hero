@@ -28,8 +28,12 @@
         {% endif %}
 
         <div class="form-actions">
-            <a href="{% url 'catalog:product_update' product.pk %}" class="btn">Edit</a>
-            <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-danger">Delete</a>
+            {% if perms.catalog.change_product %}
+                <a href="{% url 'catalog:product_update' product.pk %}" class="btn">Edit</a>
+            {% endif %}
+            {% if perms.catalog.delete_product %}
+                <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-danger">Delete</a>
+            {% endif %}
         </div>
     </main>
 {% endblock %}

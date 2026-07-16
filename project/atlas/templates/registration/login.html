@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Atlas — Log in{% endblock %}
+
+{% block content %}
+    <main class="container">
+        <h2>Log in</h2>
+
+        <form method="post" class="model-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            {{ form.as_p }}
+            <input type="hidden" name="next" value="{{ next }}">
+            <div class="form-actions">
+                <button type="submit" class="btn">Log in</button>
+            </div>
+        </form>
+
+        <p>No account? <a href="{% url 'accounts:signup' %}">Sign up</a>.</p>
+    </main>
+{% endblock %}

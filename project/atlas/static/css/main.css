@@ -162,6 +162,32 @@ form.model-form .errorlist {
     color: white;
 }
 
+.site-header .nav-user {
+    color: #ff9f1c;
+    margin-left: 20px;
+    font-size: 0.9rem;
+}
+
+.nav-logout-form {
+    display: inline;
+    margin-left: 20px;
+}
+
+.nav-link-button {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #d1d1e0;
+    font-size: 0.95rem;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: inherit;
+}
+
+.nav-link-button:hover {
+    color: white;
+}
+
 /* Hero */
 .hero {
     background: #232347;

@@ -11,7 +11,9 @@
             <button type="submit" class="btn">Search</button>
         </form>
 
-        <p><a href="{% url 'catalog:product_create' %}" class="btn">+ Add product</a></p>
+        {% if perms.catalog.add_product %}
+            <p><a href="{% url 'catalog:product_create' %}" class="btn">+ Add product</a></p>
+        {% endif %}
 
         <div class="product-grid">
             {% for product in products %}
@@ -24,13 +26,17 @@
                     {% else %}
                         <p class="stock out">Out of stock</p>
                     {% endif %}
-                    <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-secondary">Edit</a>
+                    {% if perms.catalog.change_product %}
+                        <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-secondary">Edit</a>
+                    {% endif %}
                 </article>
             {% empty %}
                 {% if query %}
                     <p>No products match "{{ query }}".</p>
-                {% else %}
+                {% elif perms.catalog.add_product %}
                     <p>No products yet — <a href="{% url 'catalog:product_create' %}">add one</a>.</p>
+                {% else %}
+                    <p>No products yet.</p>
                 {% endif %}
             {% endfor %}
         </div>
