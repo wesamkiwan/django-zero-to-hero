@@ -21,7 +21,7 @@ Check items off as you complete them. Progress is tracked here and in commit his
 - [x] **02 — Web & HTTP Fundamentals + HTML/CSS Basics**
       The request/response cycle, HTTP methods & status codes, cookies/sessions,
       enough HTML/CSS to build real pages.
-- [ ] **03 — Django Fundamentals: Projects, Apps, URLs, Views, Templates**
+- [x] **03 — Django Fundamentals: Projects, Apps, URLs, Views, Templates**
       Django's architecture (MVT), starting the Atlas project, first app, first views,
       first templates, static files.
 - [ ] **04 — Models & the ORM**

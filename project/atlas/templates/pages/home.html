@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Atlas — Home{% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <div class="container">
+            <h1>Everything your store needs, in one place.</h1>
+            <p>Inventory, customers, and sales — all in Atlas. This page is
+               rendered by a real Django view, using template inheritance
+               from <code>base.html</code>.</p>
+        </div>
+    </section>
+
+    <main class="container">
+        <h2>Why Atlas?</h2>
+        <p>
+            Atlas started as a learning project and is being built into a
+            complete store inventory + CRM platform: {{ feature_count }} major
+            capabilities and counting, covered module by module.
+        </p>
+        <ul>
+            {% for feature in features %}
+                <li>{{ feature }}</li>
+            {% endfor %}
+        </ul>
+    </main>
+{% endblock %}

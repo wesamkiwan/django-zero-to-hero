@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Atlas — About{% endblock %}
+
+{% block content %}
+    <main class="container">
+        <h2>About Atlas</h2>
+        <p>
+            Atlas is the portfolio project built throughout the
+            <em>Django Zero to Hero</em> learning path. It's a store
+            inventory management + CRM platform, built one module at a time,
+            with every commit representing a real, working increment.
+        </p>
+        <p>Started: {{ started_year }}.</p>
+    </main>
+{% endblock %}

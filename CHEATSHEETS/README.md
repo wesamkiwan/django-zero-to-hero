@@ -9,6 +9,7 @@ while the course is still being written.
 
 - [01 — Orientation, Environment Setup & Python-for-Django Refresher](../modules/01-orientation-setup-python-refresher/cheatsheet.md)
 - [02 — Web & HTTP Fundamentals + HTML/CSS Basics](../modules/02-web-http-fundamentals-html-css/cheatsheet.md)
+- [03 — Django Fundamentals: Projects, Apps, URLs, Views, Templates](../modules/03-django-fundamentals/cheatsheet.md)
 
 ## Overall cheat sheet
 

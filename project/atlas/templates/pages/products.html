@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Atlas — Products{% endblock %}
+
+{% block content %}
+    <main class="container">
+        <h2>Featured products</h2>
+        <p>
+            This data is still hardcoded in <code>pages/views.py</code> — there's
+            no database yet. Module 04 replaces this list with real
+            <code>Product</code> model instances pulled from the database via
+            the ORM, and this exact template barely has to change.
+        </p>
+
+        <div class="product-grid">
+            {% for product in products %}
+                <article class="product-card">
+                    <div class="product-image" aria-hidden="true">{{ product.emoji }}</div>
+                    <h3>{{ product.name }}</h3>
+                    <p class="price">${{ product.price }}</p>
+                    {% if product.in_stock %}
+                        <p class="stock">{{ product.quantity }} in stock</p>
+                        <button type="button">Add to order</button>
+                    {% else %}
+                        <p class="stock out">Out of stock</p>
+                        <button type="button" disabled>Add to order</button>
+                    {% endif %}
+                </article>
+            {% empty %}
+                <p>No products yet.</p>
+            {% endfor %}
+        </div>
+    </main>
+{% endblock %}
