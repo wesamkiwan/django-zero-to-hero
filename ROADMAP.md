@@ -45,7 +45,7 @@ Check items off as you complete them. Progress is tracked here and in commit his
       pytest-django, the Django test client, factories, coverage, a TDD mindset.
 - [x] **12 — Advanced ORM, Query Optimization & Caching**
       select_related/prefetch_related, aggregation/annotation, N+1 queries, indexes, Redis caching.
-- [ ] **13 — Celery & Background/Async Tasks**
+- [x] **13 — Celery & Background/Async Tasks**
       Long-running work off the request/response cycle, scheduled jobs, async emails.
 - [ ] **14 — Real-World Features**
       File/image uploads, PDF invoice generation, CSV/Excel export, search & filtering, notifications.

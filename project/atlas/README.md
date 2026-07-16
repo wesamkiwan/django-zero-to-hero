@@ -5,7 +5,7 @@ inventory management + CRM platform. This app evolves module by module;
 this README always reflects its *current* state (check git history for how
 it got here).
 
-## Current state (as of Module 12)
+## Current state (as of Module 13)
 
 - Project `config/`, apps: `accounts`, `pages`, `catalog`, `customers`, `orders`.
 - Real data model, backed by migrations:
@@ -31,15 +31,22 @@ it got here).
   permission rules as the web UI, token authentication (`/api/token/`), a
   writable nested `OrderSerializer` (create/update an order with its line
   items in one request), and a browsable API UI at `/api-auth/login/`.
-- **A real automated test suite**: 40 tests (pytest-django + factory_boy),
-  93% coverage — models, view permission gating, form/serializer
-  validation, writable nested order API, and query-count/caching proofs.
-  See `pytest.ini`, `conftest.py`, and each app's `factories.py`/`tests/`.
+- **A real automated test suite**: 45 tests (pytest-django + factory_boy),
+  94% coverage — models, view permission gating, form/serializer
+  validation, writable nested order API, query-count/caching proofs, and
+  async task behavior. See `pytest.ini`, `conftest.py`, and each app's
+  `factories.py`/`tests/`.
 - **Query optimization & caching**: `Q`-based multi-field search,
   `select_related`/`prefetch_related` throughout, a race-condition-safe
   `Product.adjust_stock()` using `F()`, an `annotate`+`aggregate` average
   order value on the dashboard, a composite index matching the low-stock
   filter, and a cached (signal-invalidated) `low_stock_count`.
+- **Background & scheduled tasks with Celery**: order confirmation emails
+  send on a worker via `transaction.on_commit()` (not inline in the
+  request), keeping order creation atomic so the email always reflects
+  the order's real total; a daily low-stock report runs on a
+  Celery Beat schedule. Tests run task code synchronously
+  (`CELERY_TASK_ALWAYS_EAGER`) with no Redis/worker needed for the suite.
 
 > ⚠️ If you cloned/ran this project before Module 08, delete your local
 > `db.sqlite3` before migrating again — see the Module 08 lesson for why
@@ -62,12 +69,21 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Run the test suite:
+Run the test suite (no Redis or Celery worker needed — tasks run synchronously in tests):
 
 ```bash
 pip install -r requirements-dev.txt
 pytest -v
 coverage run -m pytest && coverage report
+```
+
+To see background/scheduled tasks run for real, start Redis plus a worker
+and beat alongside `runserver`:
+
+```bash
+docker run -p 6379:6379 redis:7
+celery -A config worker --loglevel=info    # add --pool=solo on Windows
+celery -A config beat --loglevel=info
 ```
 
 Then visit:
@@ -92,6 +108,7 @@ project/atlas/
 ├── .coveragerc
 ├── conftest.py            <- shared pytest fixtures (category, product, sales_rep_user, ...)
 ├── config/              <- the Django PROJECT: settings + root URL config
+│   └── celery.py           <- the Celery app (config_from_object + autodiscover_tasks)
 ├── accounts/             <- custom User model, signup/login/logout, roles/groups
 │   ├── models.py
 │   ├── forms.py
@@ -107,10 +124,13 @@ project/atlas/
 │   ├── api_views.py         <- DRF ViewSets
 │   ├── cache.py              <- get_low_stock_count() (cached)
 │   ├── signals.py            <- invalidates the cache on Product save/delete
+│   ├── tasks.py               <- send_low_stock_report() (Celery Beat schedule)
 │   ├── factories.py
-│   └── tests/                <- test_models.py, test_views.py, test_api.py, test_query_optimization.py
+│   └── tests/                <- test_models.py, test_views.py, test_api.py, test_query_optimization.py, test_tasks.py
 ├── customers/            <- Customer (+ serializers.py, api_views.py, factories.py, tests/)
 ├── orders/               <- Order, OrderItem (+ serializers.py, api_views.py, factories.py, tests/)
+│   ├── signals.py           <- queues the confirmation email on order creation
+│   └── tasks.py              <- send_order_confirmation_email()
 ├── api/                  <- just a URLconf: DefaultRouter wiring every ViewSet + token auth
 ├── templates/            <- project-wide templates
 │   ├── base.html           <- Bootstrap 5, auth-aware nav

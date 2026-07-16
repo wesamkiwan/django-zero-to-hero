@@ -10,7 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
+import sys
 from pathlib import Path
+
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -190,4 +194,53 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
+}
+
+# Email — console backend prints "sent" emails to the terminal instead of
+# actually sending, perfect for local development. Module 16 covers a real
+# SMTP/transactional-email-provider backend for production.
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'orders@atlas.example'
+
+# Celery — see Module 13. Real deployments need Redis (or another real
+# broker) running; CELERY_TASK_ALWAYS_EAGER lets tests run task code
+# synchronously, in-process, with no broker at all.
+#
+# This deliberately checks `'pytest' in sys.modules` rather than an
+# env var conftest.py sets before importing Django. That was the first
+# approach tried here, and it silently didn't work: pytest-django calls
+# django.setup() (which builds config/celery.py's Celery app and caches
+# its config) from ITS OWN pytest_configure hook, which runs before the
+# project's root conftest.py module body ever executes — so by the time
+# conftest.py set the env var, Celery had already cached
+# task_always_eager=False and a real Redis result backend, permanently,
+# for the rest of the process. Every `.delay()` call in the suite then
+# tried to actually talk to Redis. `'pytest' in sys.modules` sidesteps
+# the ordering problem entirely: pytest necessarily imports itself
+# before it can call any hook, so this is already True the first time
+# settings.py runs under pytest, no matter how early that is.
+CELERY_TASK_ALWAYS_EAGER = 'pytest' in sys.modules
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+
+if CELERY_TASK_ALWAYS_EAGER:
+    # Even in eager mode, Celery still tries to store each task's result
+    # in whatever CELERY_RESULT_BACKEND is configured — pointing that at
+    # Redis here would make every test try (and fail, repeatedly retrying)
+    # to connect to a broker that isn't running. None of our code calls
+    # .get() on a task's result, so there's nothing to actually store.
+    CELERY_RESULT_BACKEND = None
+    CELERY_TASK_STORE_EAGER_RESULT = False
+else:
+    CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+
+CELERY_BEAT_SCHEDULE = {
+    'daily-low-stock-report': {
+        'task': 'catalog.tasks.send_low_stock_report',
+        'schedule': crontab(hour=8, minute=0),
+    },
 }
