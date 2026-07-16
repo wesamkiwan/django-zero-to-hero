@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework import viewsets
 
 from .models import Category, Product, Supplier, Tag
@@ -35,7 +36,11 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         search = self.request.query_params.get("search")
         if search:
-            qs = qs.filter(name__icontains=search)
+            qs = qs.filter(
+                Q(name__icontains=search)
+                | Q(sku__icontains=search)
+                | Q(description__icontains=search)
+            )
 
         category_id = self.request.query_params.get("category")
         if category_id:

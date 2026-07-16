@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import Count
 
 from .models import Category, Product, Supplier, Tag
 
@@ -9,9 +10,16 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ["name"]
     prepopulated_fields = {"slug": ("name",)}
 
-    @admin.display(description="Products")
+    def get_queryset(self, request):
+        # Was category.products.count() per row — one query per category
+        # PLUS one for the list itself (classic N+1). annotate() computes
+        # every category's count in the SAME query as the list, via
+        # SQL's GROUP BY/COUNT, no matter how many categories exist.
+        return super().get_queryset(request).annotate(product_count=Count("products"))
+
+    @admin.display(description="Products", ordering="product_count")
     def product_count(self, category):
-        return category.products.count()
+        return category.product_count
 
 
 @admin.register(Supplier)

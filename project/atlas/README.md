@@ -5,7 +5,7 @@ inventory management + CRM platform. This app evolves module by module;
 this README always reflects its *current* state (check git history for how
 it got here).
 
-## Current state (as of Module 11)
+## Current state (as of Module 12)
 
 - Project `config/`, apps: `accounts`, `pages`, `catalog`, `customers`, `orders`.
 - Real data model, backed by migrations:
@@ -31,10 +31,15 @@ it got here).
   permission rules as the web UI, token authentication (`/api/token/`), a
   writable nested `OrderSerializer` (create/update an order with its line
   items in one request), and a browsable API UI at `/api-auth/login/`.
-- **A real automated test suite**: 34 tests (pytest-django + factory_boy),
+- **A real automated test suite**: 40 tests (pytest-django + factory_boy),
   93% coverage — models, view permission gating, form/serializer
-  validation, and the writable nested order API. See `pytest.ini`,
-  `conftest.py`, and each app's `factories.py`/`tests/`.
+  validation, writable nested order API, and query-count/caching proofs.
+  See `pytest.ini`, `conftest.py`, and each app's `factories.py`/`tests/`.
+- **Query optimization & caching**: `Q`-based multi-field search,
+  `select_related`/`prefetch_related` throughout, a race-condition-safe
+  `Product.adjust_stock()` using `F()`, an `annotate`+`aggregate` average
+  order value on the dashboard, a composite index matching the low-stock
+  filter, and a cached (signal-invalidated) `low_stock_count`.
 
 > ⚠️ If you cloned/ran this project before Module 08, delete your local
 > `db.sqlite3` before migrating again — see the Module 08 lesson for why
@@ -100,8 +105,10 @@ project/atlas/
 │   ├── templatetags/       <- catalog_extras.py (currency, low_stock_count)
 │   ├── serializers.py       <- DRF serializers
 │   ├── api_views.py         <- DRF ViewSets
+│   ├── cache.py              <- get_low_stock_count() (cached)
+│   ├── signals.py            <- invalidates the cache on Product save/delete
 │   ├── factories.py
-│   └── tests/                <- test_models.py, test_views.py, test_api.py
+│   └── tests/                <- test_models.py, test_views.py, test_api.py, test_query_optimization.py
 ├── customers/            <- Customer (+ serializers.py, api_views.py, factories.py, tests/)
 ├── orders/               <- Order, OrderItem (+ serializers.py, api_views.py, factories.py, tests/)
 ├── api/                  <- just a URLconf: DefaultRouter wiring every ViewSet + token auth

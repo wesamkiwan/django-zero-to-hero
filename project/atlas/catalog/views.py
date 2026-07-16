@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
@@ -14,10 +15,17 @@ class ProductListView(ListView):
     paginate_by = 12                    # free pagination, no hand-written logic
 
     def get_queryset(self):
-        qs = Product.objects.filter(is_active=True)
+        qs = Product.objects.select_related("category", "supplier").filter(is_active=True)
         query = self.request.GET.get("q", "").strip()
         if query:
-            qs = qs.filter(name__icontains=query)
+            # Q lets you OR conditions together — a single filter() call
+            # only ever ANDs its arguments, so matching "the search term
+            # anywhere in name OR sku OR description" needs Q.
+            qs = qs.filter(
+                Q(name__icontains=query)
+                | Q(sku__icontains=query)
+                | Q(description__icontains=query)
+            )
         return qs
 
     def get_context_data(self, **kwargs):

@@ -18,6 +18,7 @@ while the course is still being written.
 - [09 — Templates & Frontend Polish](../modules/09-templates-frontend-polish/cheatsheet.md)
 - [10 — Django REST Framework: Building APIs](../modules/10-django-rest-framework/cheatsheet.md)
 - [11 — Testing](../modules/11-testing/cheatsheet.md)
+- [12 — Advanced ORM, Query Optimization & Caching](../modules/12-advanced-orm-caching/cheatsheet.md)
 
 ## Overall cheat sheet
 

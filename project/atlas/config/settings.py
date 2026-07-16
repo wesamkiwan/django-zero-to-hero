@@ -97,6 +97,18 @@ DATABASES = {
     }
 }
 
+# Caching — see Module 12. LocMemCache lives inside this one process, which
+# is fine for local dev and for this course, but NOT for a real multi-process
+# deployment (each worker process would have its own separate cache, so one
+# worker invalidating a key wouldn't affect the others). Module 16 swaps
+# this for Redis, shared across every process, without changing any code
+# that calls cache.get()/set() — that's the point of the cache abstraction.
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators

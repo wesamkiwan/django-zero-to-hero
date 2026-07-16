@@ -43,7 +43,7 @@ Check items off as you complete them. Progress is tracked here and in commit his
       Atlas gets a full REST API.
 - [x] **11 — Testing**
       pytest-django, the Django test client, factories, coverage, a TDD mindset.
-- [ ] **12 — Advanced ORM, Query Optimization & Caching**
+- [x] **12 — Advanced ORM, Query Optimization & Caching**
       select_related/prefetch_related, aggregation/annotation, N+1 queries, indexes, Redis caching.
 - [ ] **13 — Celery & Background/Async Tasks**
       Long-running work off the request/response cycle, scheduled jobs, async emails.
