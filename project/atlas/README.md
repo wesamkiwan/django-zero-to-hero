@@ -5,15 +5,16 @@ inventory management + CRM platform. This app evolves module by module;
 this README always reflects its *current* state (check git history for how
 it got here).
 
-## Current state (as of Module 03)
+## Current state (as of Module 04)
 
-- Project `config/`, one app `pages/`.
-- Three routes: home, products (hardcoded data), about — proving out
-  URLs → views → templates → static files with template inheritance.
-- **No database models yet** — that's Module 04. The products page currently
-  reads from a hardcoded Python list in `pages/views.py` on purpose, so this
-  module could focus entirely on the URL/view/template/static-file flow
-  without the ORM's added complexity.
+- Project `config/`, apps: `pages`, `catalog`, `customers`, `orders`.
+- Real data model, backed by migrations:
+  - `catalog`: `Category`, `Supplier`, `Tag`, `Product` (FK to Category/Supplier, M2M to Tag)
+  - `customers`: `Customer`
+  - `orders`: `Order`, `OrderItem` (FK across all three apps)
+- `/products/` now queries `Product.objects.filter(is_active=True)` for
+  real — no more hardcoded data. The template needed no changes to support this.
+- No admin customization, forms, or auth yet — that's Modules 05–08.
 
 ## Run it yourself
 
@@ -31,11 +32,15 @@ python manage.py migrate
 python manage.py runserver
 ```
 
+The database starts empty. Populate it via `python manage.py shell` — see
+`modules/04-models-orm/README.md` section 9 for a ready-to-paste script that
+creates categories, a supplier, tagged products, a customer, and an order.
+
 Then visit:
 - http://127.0.0.1:8000/ — home
-- http://127.0.0.1:8000/products/ — hardcoded product list
+- http://127.0.0.1:8000/products/ — real products from the database
 - http://127.0.0.1:8000/about/ — about page
-- http://127.0.0.1:8000/admin/ — Django admin (no custom models registered yet)
+- http://127.0.0.1:8000/admin/ — Django admin (no custom models registered yet — Module 05)
 
 ## Structure
 
@@ -44,19 +49,13 @@ project/atlas/
 ├── manage.py
 ├── requirements.txt
 ├── config/              <- the Django PROJECT: settings + root URL config
-│   ├── settings.py
-│   ├── urls.py
-│   ├── wsgi.py
-│   └── asgi.py
-├── pages/                <- an APP: static-ish pages (home/products/about)
-│   ├── views.py
-│   └── urls.py           <- app-level URLconf, included from config/urls.py
+├── pages/                <- static-ish pages (home/products/about)
+├── catalog/              <- Category, Supplier, Tag, Product
+├── customers/            <- Customer
+├── orders/               <- Order, OrderItem
 ├── templates/            <- project-wide templates
-│   ├── base.html          <- shared layout, uses {% block %}
-│   └── pages/              <- templates specific to the pages app
-│       ├── home.html
-│       ├── products.html
-│       └── about.html
+│   ├── base.html
+│   └── pages/
 └── static/               <- project-wide static assets
     └── css/main.css
 ```

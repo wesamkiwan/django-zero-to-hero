@@ -24,7 +24,7 @@ Check items off as you complete them. Progress is tracked here and in commit his
 - [x] **03 — Django Fundamentals: Projects, Apps, URLs, Views, Templates**
       Django's architecture (MVT), starting the Atlas project, first app, first views,
       first templates, static files.
-- [ ] **04 — Models & the ORM**
+- [x] **04 — Models & the ORM**
       Defining models, migrations, relationships (FK/M2M/O2O), QuerySets, managers.
       Atlas gets its real data model: products, categories, customers, suppliers, orders.
 - [ ] **05 — Django Admin Mastery**

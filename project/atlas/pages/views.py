@@ -1,5 +1,7 @@
 from django.shortcuts import render
 
+from catalog.models import Product
+
 FEATURES = [
     "Product & inventory catalog",
     "Customer relationship management (CRM)",
@@ -7,14 +9,6 @@ FEATURES = [
     "Role-based staff/manager/customer access",
     "REST API",
     "Background tasks & scheduled reports",
-]
-
-# Hardcoded for now — Module 04 replaces this with real Product model
-# instances fetched from the database via the ORM.
-PRODUCTS = [
-    {"name": "Mechanical Keyboard", "price": "79.99", "quantity": 12, "in_stock": True, "emoji": "\U0001F4E6"},
-    {"name": "Wireless Mouse", "price": "29.99", "quantity": 34, "in_stock": True, "emoji": "\U0001F5B1"},
-    {"name": '27" Monitor', "price": "249.00", "quantity": 0, "in_stock": False, "emoji": "\U0001F5A5"},
 ]
 
 
@@ -27,7 +21,9 @@ def home(request):
 
 
 def products(request):
-    context = {"products": PRODUCTS}
+    # Real database query now — Module 03 had this as a hardcoded Python
+    # list. Notice the template barely had to change (see products.html).
+    context = {"products": Product.objects.filter(is_active=True)}
     return render(request, "pages/products.html", context)
 
 

@@ -6,20 +6,21 @@
     <main class="container">
         <h2>Featured products</h2>
         <p>
-            This data is still hardcoded in <code>pages/views.py</code> — there's
-            no database yet. Module 04 replaces this list with real
-            <code>Product</code> model instances pulled from the database via
-            the ORM, and this exact template barely has to change.
+            This is now a real database query &mdash; <code>Product.objects.filter(is_active=True)</code>
+            in <code>pages/views.py</code> &mdash; instead of the hardcoded Python list from
+            Module 03. Notice this template barely had to change: variables like
+            product name and price render exactly the same whether <code>product</code>
+            is a plain dict or a real model instance.
         </p>
 
         <div class="product-grid">
             {% for product in products %}
                 <article class="product-card">
-                    <div class="product-image" aria-hidden="true">{{ product.emoji }}</div>
+                    <div class="product-image" aria-hidden="true">&#128230;</div>
                     <h3>{{ product.name }}</h3>
                     <p class="price">${{ product.price }}</p>
                     {% if product.in_stock %}
-                        <p class="stock">{{ product.quantity }} in stock</p>
+                        <p class="stock">{{ product.quantity_in_stock }} in stock</p>
                         <button type="button">Add to order</button>
                     {% else %}
                         <p class="stock out">Out of stock</p>
@@ -27,7 +28,8 @@
                     {% endif %}
                 </article>
             {% empty %}
-                <p>No products yet.</p>
+                <p>No products yet — add some via the Django admin (Module 05) or
+                   <code>python manage.py shell</code>.</p>
             {% endfor %}
         </div>
     </main>
