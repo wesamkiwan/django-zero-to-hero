@@ -41,7 +41,7 @@ Check items off as you complete them. Progress is tracked here and in commit his
 - [x] **10 — Django REST Framework: Building APIs**
       Serializers, viewsets, routers, authentication (token/JWT), permissions, pagination.
       Atlas gets a full REST API.
-- [ ] **11 — Testing**
+- [x] **11 — Testing**
       pytest-django, the Django test client, factories, coverage, a TDD mindset.
 - [ ] **12 — Advanced ORM, Query Optimization & Caching**
       select_related/prefetch_related, aggregation/annotation, N+1 queries, indexes, Redis caching.

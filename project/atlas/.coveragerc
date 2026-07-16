@@ -1,0 +1,10 @@
+[run]
+omit =
+    */migrations/*
+    manage.py
+    */tests/*
+    conftest.py
+    */factories.py
+
+[report]
+skip_empty = True

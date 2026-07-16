@@ -5,7 +5,7 @@ inventory management + CRM platform. This app evolves module by module;
 this README always reflects its *current* state (check git history for how
 it got here).
 
-## Current state (as of Module 10)
+## Current state (as of Module 11)
 
 - Project `config/`, apps: `accounts`, `pages`, `catalog`, `customers`, `orders`.
 - Real data model, backed by migrations:
@@ -31,6 +31,10 @@ it got here).
   permission rules as the web UI, token authentication (`/api/token/`), a
   writable nested `OrderSerializer` (create/update an order with its line
   items in one request), and a browsable API UI at `/api-auth/login/`.
+- **A real automated test suite**: 34 tests (pytest-django + factory_boy),
+  93% coverage — models, view permission gating, form/serializer
+  validation, and the writable nested order API. See `pytest.ini`,
+  `conftest.py`, and each app's `factories.py`/`tests/`.
 
 > ⚠️ If you cloned/ran this project before Module 08, delete your local
 > `db.sqlite3` before migrating again — see the Module 08 lesson for why
@@ -47,10 +51,18 @@ venv\Scripts\Activate.ps1
 # macOS/Linux:
 source venv/bin/activate
 
-pip install -r requirements.txt
+pip install -r requirements.txt      # or requirements-dev.txt to include test tools
 python manage.py migrate
 python manage.py createsuperuser
 python manage.py runserver
+```
+
+Run the test suite:
+
+```bash
+pip install -r requirements-dev.txt
+pytest -v
+coverage run -m pytest && coverage report
 ```
 
 Then visit:
@@ -70,20 +82,28 @@ Then visit:
 project/atlas/
 ├── manage.py
 ├── requirements.txt
+├── requirements-dev.txt  <- + pytest, pytest-django, factory-boy, coverage
+├── pytest.ini
+├── .coveragerc
+├── conftest.py            <- shared pytest fixtures (category, product, sales_rep_user, ...)
 ├── config/              <- the Django PROJECT: settings + root URL config
 ├── accounts/             <- custom User model, signup/login/logout, roles/groups
 │   ├── models.py
 │   ├── forms.py
 │   ├── views.py
+│   ├── factories.py        <- UserFactory
+│   ├── tests/
 │   └── migrations/        <- includes the "Sales Team" group data migration
 ├── pages/                <- Home/About/Dashboard
 │   └── templatetags/       <- form_extras.py (add_class, widget_type)
 ├── catalog/              <- Category, Supplier, Tag, Product + permission-gated CRUD
 │   ├── templatetags/       <- catalog_extras.py (currency, low_stock_count)
 │   ├── serializers.py       <- DRF serializers
-│   └── api_views.py         <- DRF ViewSets
-├── customers/            <- Customer (+ serializers.py, api_views.py)
-├── orders/               <- Order, OrderItem (+ serializers.py, api_views.py — writable nested)
+│   ├── api_views.py         <- DRF ViewSets
+│   ├── factories.py
+│   └── tests/                <- test_models.py, test_views.py, test_api.py
+├── customers/            <- Customer (+ serializers.py, api_views.py, factories.py, tests/)
+├── orders/               <- Order, OrderItem (+ serializers.py, api_views.py, factories.py, tests/)
 ├── api/                  <- just a URLconf: DefaultRouter wiring every ViewSet + token auth
 ├── templates/            <- project-wide templates
 │   ├── base.html           <- Bootstrap 5, auth-aware nav

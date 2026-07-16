@@ -17,6 +17,7 @@ while the course is still being written.
 - [08 — Authentication, Authorization & Permissions](../modules/08-authentication-authorization/cheatsheet.md)
 - [09 — Templates & Frontend Polish](../modules/09-templates-frontend-polish/cheatsheet.md)
 - [10 — Django REST Framework: Building APIs](../modules/10-django-rest-framework/cheatsheet.md)
+- [11 — Testing](../modules/11-testing/cheatsheet.md)
 
 ## Overall cheat sheet
 
