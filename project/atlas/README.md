@@ -5,7 +5,7 @@ inventory management + CRM platform. This app evolves module by module;
 this README always reflects its *current* state (check git history for how
 it got here).
 
-## Current state (as of Module 08)
+## Current state (as of Module 09)
 
 - Project `config/`, apps: `accounts`, `pages`, `catalog`, `customers`, `orders`.
 - Real data model, backed by migrations:
@@ -22,6 +22,10 @@ it got here).
   `catalog`'s create/update/delete views gated with
   `LoginRequiredMixin` + `PermissionRequiredMixin`. Anyone can browse
   products; only logged-in users with the right permission can manage them.
+- **Bootstrap 5 frontend** (via CDN) with a small brand-specific
+  `custom.css` layered on top, a real `/dashboard/` page (stat cards, low
+  stock alert, recent orders) for logged-in users, and custom template
+  tags/filters (`currency`, `low_stock_count`, `add_class`, `widget_type`).
 
 > ⚠️ If you cloned/ran this project before Module 08, delete your local
 > `db.sqlite3` before migrating again — see the Module 08 lesson for why
@@ -51,6 +55,7 @@ Then visit:
 - http://127.0.0.1:8000/about/ — about page
 - http://127.0.0.1:8000/admin/ — fully customized Django admin; add a user to the
   "Sales Team" group here to grant product management permissions
+- http://127.0.0.1:8000/dashboard/ — stats dashboard (requires login)
 
 ## Structure
 
@@ -64,16 +69,18 @@ project/atlas/
 │   ├── forms.py
 │   ├── views.py
 │   └── migrations/        <- includes the "Sales Team" group data migration
-├── pages/                <- Home/About
+├── pages/                <- Home/About/Dashboard
+│   └── templatetags/       <- form_extras.py (add_class, widget_type)
 ├── catalog/              <- Category, Supplier, Tag, Product + permission-gated CRUD
+│   └── templatetags/       <- catalog_extras.py (currency, low_stock_count)
 ├── customers/            <- Customer
 ├── orders/               <- Order, OrderItem
 ├── templates/            <- project-wide templates
-│   ├── base.html           <- auth-aware nav (login/signup vs. username/logout)
+│   ├── base.html           <- Bootstrap 5, auth-aware nav
 │   ├── registration/       <- login.html (Django's conventional path)
 │   ├── accounts/           <- signup.html
-│   ├── pages/
+│   ├── pages/               <- includes dashboard.html
 │   └── catalog/
 └── static/               <- project-wide static assets
-    └── css/main.css
+    └── css/custom.css       <- brand overrides on top of Bootstrap
 ```

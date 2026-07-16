@@ -1,39 +1,38 @@
 {% extends "base.html" %}
+{% load catalog_extras %}
 
 {% block title %}Atlas — {{ product.name }}{% endblock %}
 
 {% block content %}
-    <main class="container">
-        <p><a href="{% url 'catalog:product_list' %}">&larr; Back to products</a></p>
+    <p><a href="{% url 'catalog:product_list' %}">&larr; Back to products</a></p>
 
-        <h2>{{ product.name }}</h2>
-        <p class="price">${{ product.price }}</p>
+    <h2>{{ product.name }}</h2>
+    <p class="fs-4 fw-bold text-warning-emphasis">{{ product.price|currency }}</p>
 
-        <table>
-            <tr><th>SKU</th><td>{{ product.sku }}</td></tr>
-            <tr><th>Category</th><td>{{ product.category }}</td></tr>
-            <tr><th>Supplier</th><td>{{ product.supplier|default:"—" }}</td></tr>
-            <tr><th>Tags</th><td>
-                {% for tag in product.tags.all %}{{ tag }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}
-            </td></tr>
-            <tr><th>In stock</th><td>{{ product.quantity_in_stock }}</td></tr>
-            <tr><th>Reorder level</th><td>{{ product.reorder_level }}</td></tr>
-            <tr><th>Needs reorder?</th><td>{{ product.needs_reorder }}</td></tr>
-            <tr><th>Active</th><td>{{ product.is_active }}</td></tr>
-        </table>
+    <table class="table table-sm w-auto">
+        <tr><th>SKU</th><td>{{ product.sku }}</td></tr>
+        <tr><th>Category</th><td>{{ product.category }}</td></tr>
+        <tr><th>Supplier</th><td>{{ product.supplier|default:"—" }}</td></tr>
+        <tr><th>Tags</th><td>
+            {% for tag in product.tags.all %}<span class="badge bg-secondary">{{ tag }}</span>{% empty %}—{% endfor %}
+        </td></tr>
+        <tr><th>In stock</th><td>{{ product.quantity_in_stock }}</td></tr>
+        <tr><th>Reorder level</th><td>{{ product.reorder_level }}</td></tr>
+        <tr><th>Needs reorder?</th><td>{{ product.needs_reorder }}</td></tr>
+        <tr><th>Active</th><td>{{ product.is_active }}</td></tr>
+    </table>
 
-        {% if product.description %}
-            <h3>Description</h3>
-            <p>{{ product.description }}</p>
+    {% if product.description %}
+        <h3>Description</h3>
+        <p>{{ product.description }}</p>
+    {% endif %}
+
+    <div class="d-flex gap-2 mt-3">
+        {% if perms.catalog.change_product %}
+            <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-primary">Edit</a>
         {% endif %}
-
-        <div class="form-actions">
-            {% if perms.catalog.change_product %}
-                <a href="{% url 'catalog:product_update' product.pk %}" class="btn">Edit</a>
-            {% endif %}
-            {% if perms.catalog.delete_product %}
-                <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-danger">Delete</a>
-            {% endif %}
-        </div>
-    </main>
+        {% if perms.catalog.delete_product %}
+            <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-outline-danger">Delete</a>
+        {% endif %}
+    </div>
 {% endblock %}

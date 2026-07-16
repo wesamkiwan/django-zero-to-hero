@@ -36,7 +36,7 @@ Check items off as you complete them. Progress is tracked here and in commit his
 - [x] **08 — Authentication, Authorization & Permissions**
       Login/logout/signup, custom User model, groups & permissions, role-based access
       (staff / manager / sales rep / customer) for Atlas.
-- [ ] **09 — Templates & Frontend Polish**
+- [x] **09 — Templates & Frontend Polish**
       Template inheritance, custom template tags/filters, Bootstrap integration, dashboards.
 - [ ] **10 — Django REST Framework: Building APIs**
       Serializers, viewsets, routers, authentication (token/JWT), permissions, pagination.

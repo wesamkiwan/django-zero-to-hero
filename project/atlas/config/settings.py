@@ -143,3 +143,12 @@ AUTH_USER_MODEL = 'accounts.User'
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'pages:home'
 LOGOUT_REDIRECT_URL = 'pages:home'
+
+# Django's messages framework tags a message "error"; Bootstrap's alert
+# class is "danger" — remap so {{ message.tags }} lines up with Bootstrap's
+# alert-{{ message.tags }} classes in base.html without a template-side hack.
+from django.contrib.messages import constants as message_constants
+
+MESSAGE_TAGS = {
+    message_constants.ERROR: "danger",
+}

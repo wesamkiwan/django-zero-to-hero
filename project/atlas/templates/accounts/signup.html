@@ -1,20 +1,31 @@
 {% extends "base.html" %}
+{% load form_extras %}
 
 {% block title %}Atlas — Sign up{% endblock %}
 
 {% block content %}
-    <main class="container">
-        <h2>Sign up</h2>
+    <h2>Sign up</h2>
 
-        <form method="post" class="model-form">
-            {% csrf_token %}
-            {{ form.non_field_errors }}
-            {{ form.as_p }}
-            <div class="form-actions">
-                <button type="submit" class="btn">Create account</button>
+    <form method="post" style="max-width: 420px;">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        {% for field in form %}
+            <div class="mb-3">
+                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                {{ field|add_class:"form-control" }}
+                {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+                {% for error in field.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
             </div>
-        </form>
+        {% endfor %}
 
-        <p>Already have an account? <a href="{% url 'accounts:login' %}">Log in</a>.</p>
-    </main>
+        <button type="submit" class="btn btn-primary">Create account</button>
+    </form>
+
+    <p class="mt-3">Already have an account? <a href="{% url 'accounts:login' %}">Log in</a>.</p>
 {% endblock %}

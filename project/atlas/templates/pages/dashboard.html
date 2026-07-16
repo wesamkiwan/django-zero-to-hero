@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load catalog_extras %}
+
+{% block title %}Atlas — Dashboard{% endblock %}
+
+{% block content %}
+    <h2>Dashboard</h2>
+    <p class="text-muted">Welcome back, {{ user.username }}.</p>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card stat-card h-100">
+                <div class="card-body">
+                    <div class="stat-value">{{ product_count }}</div>
+                    <div class="text-muted small">Active products</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card stat-card h-100">
+                <div class="card-body">
+                    <div class="stat-value">
+                        {{ low_stock_count }}
+                        {% if low_stock_count > 0 %}<span class="badge bg-danger">Reorder</span>{% endif %}
+                    </div>
+                    <div class="text-muted small">Low stock</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card stat-card h-100">
+                <div class="card-body">
+                    <div class="stat-value">{{ customer_count }}</div>
+                    <div class="text-muted small">Customers</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card stat-card h-100">
+                <div class="card-body">
+                    <div class="stat-value">{{ order_count }}</div>
+                    <div class="text-muted small">Orders</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- {% low_stock_count %} demonstrates the tag version of the same
+         query used above via the view context — either approach works;
+         the simple_tag is handy when a template needs the number without
+         its view having put it in the context already. -->
+
+    <h3>Recent orders</h3>
+    {% if recent_orders %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Customer</th>
+                    <th>Status</th>
+                    <th>Total</th>
+                    <th>Placed</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in recent_orders %}
+                    <tr>
+                        <td>{{ order.pk }}</td>
+                        <td>{{ order.customer.full_name }}</td>
+                        <td><span class="badge bg-secondary">{{ order.get_status_display }}</span></td>
+                        <td>{{ order.total|currency }}</td>
+                        <td>{{ order.created_at|date:"M j, Y" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No orders yet.</p>
+    {% endif %}
+{% endblock %}

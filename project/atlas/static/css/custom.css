@@ -1,0 +1,41 @@
+/* Atlas — brand-specific overrides layered on top of Bootstrap.
+   Bootstrap handles layout/components; this file only carries the few
+   things that make Atlas look like Atlas rather than "generic Bootstrap
+   site #4213". */
+
+.navbar-brand span {
+    color: #ff9f1c;
+}
+
+.hero {
+    background: linear-gradient(135deg, #1a1a2e, #232347);
+    color: white;
+    padding: 3rem 0;
+    border-radius: 0.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.hero p {
+    color: #c7c7dd;
+    max-width: 560px;
+    margin: 0.5rem auto 0;
+}
+
+.product-card {
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.stat-card {
+    border-left: 4px solid #ff9f1c;
+}
+
+.stat-card .stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+}
