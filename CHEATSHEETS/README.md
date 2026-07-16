@@ -1,11 +1,9 @@
 # Cheat Sheets Index
 
 Every module has its own cheat sheet at `modules/NN-slug/cheatsheet.md`. This folder
-holds the **overall cheat sheet**, which aggregates all of them into one document —
-built once every module is complete, so it's not duplicated/maintained in two places
-while the course is still being written.
+holds the **overall cheat sheet**, which aggregates all of them into one document.
 
-## Per-module cheat sheets (links update as modules are completed)
+## Per-module cheat sheets
 
 - [01 — Orientation, Environment Setup & Python-for-Django Refresher](../modules/01-orientation-setup-python-refresher/cheatsheet.md)
 - [02 — Web & HTTP Fundamentals + HTML/CSS Basics](../modules/02-web-http-fundamentals-html-css/cheatsheet.md)
@@ -19,7 +17,13 @@ while the course is still being written.
 - [10 — Django REST Framework: Building APIs](../modules/10-django-rest-framework/cheatsheet.md)
 - [11 — Testing](../modules/11-testing/cheatsheet.md)
 - [12 — Advanced ORM, Query Optimization & Caching](../modules/12-advanced-orm-caching/cheatsheet.md)
+- [13 — Celery & Background/Async Tasks](../modules/13-celery-async-tasks/cheatsheet.md)
+- [14 — Real-World Features](../modules/14-real-world-features/cheatsheet.md)
+- [15 — Security Best Practices](../modules/15-security-best-practices/cheatsheet.md)
+- [16 — Configuration, Docker & Deployment](../modules/16-config-docker-deployment/cheatsheet.md)
+- [17 — Git Workflow, System Design & Job Readiness](../modules/17-git-workflow-system-design-job-readiness/cheatsheet.md)
 
 ## Overall cheat sheet
 
-Not built yet — arrives as `OVERALL_CHEATSHEET.md` in this folder after the final module.
+**[OVERALL_CHEATSHEET.md](OVERALL_CHEATSHEET.md)** — all seventeen, concatenated in
+order, one Ctrl-F for the whole course.

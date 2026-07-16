@@ -60,5 +60,5 @@ Check items off as you complete them. Progress is tracked here and in commit his
 
 ## Overall cheat sheet
 
-Once all modules are complete, `CHEATSHEETS/OVERALL_CHEATSHEET.md` aggregates every
+All modules complete — `CHEATSHEETS/OVERALL_CHEATSHEET.md` aggregates every
 module's cheat sheet into one single reference document.

@@ -25,12 +25,18 @@ profile — not a toy to-do app.
 ```
 django-zero-to-hero/
 ├── ROADMAP.md              <- full syllabus & progress tracker, start here
-├── CHEATSHEETS/            <- overall cheat sheet (built once all modules are done)
+├── CONTRIBUTING.md          <- professional git workflow (Module 17)
+├── CHEATSHEETS/
+│   ├── README.md             <- index of every module's cheat sheet
+│   └── OVERALL_CHEATSHEET.md  <- all of them, concatenated
+├── .github/
+│   ├── workflows/ci.yml      <- CI (Module 16): tests + Docker build on every push
+│   └── PULL_REQUEST_TEMPLATE.md
 ├── modules/
 │   └── NN-slug/
 │       ├── README.md       <- the lesson for this module
 │       ├── cheatsheet.md   <- quick reference for this module
-│       └── demo/           <- small throwaway examples for this module's concepts
+│       └── demo/           <- Modules 01-04 only; later modules teach directly via Atlas
 └── project/
     └── atlas/               <- the real capstone app, evolves from Module 03 onward
 ```
@@ -54,5 +60,11 @@ django-zero-to-hero/
 
 ## Status
 
-Currently on **Module 01 — Orientation, Environment Setup & Python-for-Django Refresher**.
-See `ROADMAP.md` for full progress.
+**Complete** — all 17 modules built, tested, and documented. See
+`ROADMAP.md` for the full syllabus (every box checked) and
+`CHEATSHEETS/OVERALL_CHEATSHEET.md` for a one-page reference across the
+whole course. `project/atlas/README.md` documents Atlas's final state:
+75 automated tests at 94% coverage, a REST API, Celery background
+tasks, real-world features (uploads/PDFs/exports/notifications),
+security hardening verified by `manage.py check --deploy`, and a
+Docker + PostgreSQL + Nginx deployment with CI on every push.
