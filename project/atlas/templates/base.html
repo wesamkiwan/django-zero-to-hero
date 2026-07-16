@@ -13,12 +13,20 @@
         <div class="container header-row">
             <a href="{% url 'pages:home' %}" class="logo">Atlas<span>.</span></a>
             <nav>
-                <a href="{% url 'pages:home' %}"{% if request.resolver_match.url_name == 'home' %} class="active"{% endif %}>Home</a>
-                <a href="{% url 'pages:products' %}"{% if request.resolver_match.url_name == 'products' %} class="active"{% endif %}>Products</a>
-                <a href="{% url 'pages:about' %}"{% if request.resolver_match.url_name == 'about' %} class="active"{% endif %}>About</a>
+                <a href="{% url 'pages:home' %}"{% if request.resolver_match.view_name == 'pages:home' %} class="active"{% endif %}>Home</a>
+                <a href="{% url 'catalog:product_list' %}"{% if 'catalog:' in request.resolver_match.view_name %} class="active"{% endif %}>Products</a>
+                <a href="{% url 'pages:about' %}"{% if request.resolver_match.view_name == 'pages:about' %} class="active"{% endif %}>About</a>
             </nav>
         </div>
     </header>
+
+    {% if messages %}
+        <div class="container messages">
+            {% for message in messages %}
+                <p class="message message-{{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
 
     {% block content %}{% endblock %}
 

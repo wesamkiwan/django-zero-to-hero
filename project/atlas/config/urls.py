@@ -23,5 +23,6 @@ admin.site.index_title = "Store & CRM Management"
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('products/', include('catalog.urls')),
     path('', include('pages.urls')),
 ]

@@ -19,6 +19,101 @@ body {
     padding: 0 24px;
 }
 
+/* Messages framework */
+.messages {
+    padding-top: 16px;
+}
+
+.message {
+    padding: 10px 16px;
+    border-radius: 6px;
+    margin: 0 0 10px;
+    font-size: 0.9rem;
+}
+
+.message-success { background: #d9f2e3; color: #1e6b3d; }
+.message-error   { background: #fbdcdc; color: #a12626; }
+.message-warning { background: #fff2cf; color: #8a6300; }
+.message-info    { background: #dbe9ff; color: #1c4a99; }
+
+.search-form {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    max-width: 400px;
+}
+
+.search-form input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #cfcfe0;
+    border-radius: 6px;
+}
+
+/* Forms (used by catalog product forms) */
+form.model-form {
+    display: flex;
+    flex-direction: column;
+    max-width: 480px;
+    gap: 4px;
+}
+
+form.model-form p {
+    margin: 8px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+form.model-form label {
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+form.model-form input,
+form.model-form select,
+form.model-form textarea {
+    padding: 8px;
+    border: 1px solid #cfcfe0;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.95rem;
+}
+
+form.model-form .errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    color: #a12626;
+    font-size: 0.85rem;
+}
+
+.form-actions {
+    margin-top: 16px;
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    background: #1a1a2e;
+    color: white;
+    cursor: pointer;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.btn-danger {
+    background: #d64550;
+}
+
+.btn-secondary {
+    background: #b5b5c9;
+}
+
 /* Header */
 .site-header {
     background: #1a1a2e;

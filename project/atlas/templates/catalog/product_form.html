@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Atlas — {% if is_create %}Add product{% else %}Edit {{ product.name }}{% endif %}{% endblock %}
+
+{% block content %}
+    <main class="container">
+        <h2>{% if is_create %}Add product{% else %}Edit {{ product.name }}{% endif %}</h2>
+
+        <form method="post" class="model-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            {{ form.as_p }}
+            <div class="form-actions">
+                <button type="submit" class="btn">{% if is_create %}Create{% else %}Save{% endif %}</button>
+                {% if not is_create %}
+                    <a href="{% url 'catalog:product_detail' product.pk %}" class="btn btn-secondary">Cancel</a>
+                {% else %}
+                    <a href="{% url 'catalog:product_list' %}" class="btn btn-secondary">Cancel</a>
+                {% endif %}
+            </div>
+        </form>
+    </main>
+{% endblock %}

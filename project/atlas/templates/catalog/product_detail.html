@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Atlas — {{ product.name }}{% endblock %}
+
+{% block content %}
+    <main class="container">
+        <p><a href="{% url 'catalog:product_list' %}">&larr; Back to products</a></p>
+
+        <h2>{{ product.name }}</h2>
+        <p class="price">${{ product.price }}</p>
+
+        <table>
+            <tr><th>SKU</th><td>{{ product.sku }}</td></tr>
+            <tr><th>Category</th><td>{{ product.category }}</td></tr>
+            <tr><th>Supplier</th><td>{{ product.supplier|default:"—" }}</td></tr>
+            <tr><th>Tags</th><td>
+                {% for tag in product.tags.all %}{{ tag }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}
+            </td></tr>
+            <tr><th>In stock</th><td>{{ product.quantity_in_stock }}</td></tr>
+            <tr><th>Reorder level</th><td>{{ product.reorder_level }}</td></tr>
+            <tr><th>Needs reorder?</th><td>{{ product.needs_reorder }}</td></tr>
+            <tr><th>Active</th><td>{{ product.is_active }}</td></tr>
+        </table>
+
+        {% if product.description %}
+            <h3>Description</h3>
+            <p>{{ product.description }}</p>
+        {% endif %}
+
+        <div class="form-actions">
+            <a href="{% url 'catalog:product_update' product.pk %}" class="btn">Edit</a>
+            <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-danger">Delete</a>
+        </div>
+    </main>
+{% endblock %}

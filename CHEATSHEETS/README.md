@@ -12,6 +12,7 @@ while the course is still being written.
 - [03 — Django Fundamentals: Projects, Apps, URLs, Views, Templates](../modules/03-django-fundamentals/cheatsheet.md)
 - [04 — Models & the ORM](../modules/04-models-orm/cheatsheet.md)
 - [05 — Django Admin Mastery](../modules/05-django-admin-mastery/cheatsheet.md)
+- [06 — Forms & Function-Based Views (CRUD)](../modules/06-forms-function-based-views/cheatsheet.md)
 
 ## Overall cheat sheet
 

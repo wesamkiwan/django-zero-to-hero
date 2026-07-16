@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Atlas — Delete {{ product.name }}{% endblock %}
+
+{% block content %}
+    <main class="container">
+        <h2>Delete "{{ product.name }}"?</h2>
+        <p>This can't be undone.</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-danger">Yes, delete it</button>
+                <a href="{% url 'catalog:product_detail' product.pk %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </main>
+{% endblock %}

@@ -29,7 +29,7 @@ Check items off as you complete them. Progress is tracked here and in commit his
       Atlas gets its real data model: products, categories, customers, suppliers, orders.
 - [x] **05 — Django Admin Mastery**
       Customizing ModelAdmin, inlines, list filters/search, actions, admin permissions.
-- [ ] **06 — Forms & Function-Based Views (CRUD)**
+- [x] **06 — Forms & Function-Based Views (CRUD)**
       Forms, ModelForms, validation, CSRF, building full CRUD by hand.
 - [ ] **07 — Class-Based Views & Generic Views**
       ListView/DetailView/CreateView/UpdateView/DeleteView, mixins, when to use CBVs vs FBVs.
