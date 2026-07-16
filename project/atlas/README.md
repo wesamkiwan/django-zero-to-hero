@@ -5,7 +5,7 @@ inventory management + CRM platform. This app evolves module by module;
 this README always reflects its *current* state (check git history for how
 it got here).
 
-## Current state (as of Module 14)
+## Current state (as of Module 15)
 
 - Project `config/`, apps: `accounts`, `pages`, `catalog`, `customers`, `orders`.
 - Real data model, backed by migrations:
@@ -31,11 +31,11 @@ it got here).
   permission rules as the web UI, token authentication (`/api/token/`), a
   writable nested `OrderSerializer` (create/update an order with its line
   items in one request), and a browsable API UI at `/api-auth/login/`.
-- **A real automated test suite**: 68 tests (pytest-django + factory_boy),
+- **A real automated test suite**: 73 tests (pytest-django + factory_boy),
   94% coverage — models, view permission gating, form/serializer
-  validation, writable nested order API, query-count/caching proofs, and
-  async task behavior. See `pytest.ini`, `conftest.py`, and each app's
-  `factories.py`/`tests/`.
+  validation, writable nested order API, query-count/caching proofs,
+  async task behavior, and security settings. See `pytest.ini`,
+  `conftest.py`, and each app's `factories.py`/`tests/`.
 - **Query optimization & caching**: `Q`-based multi-field search,
   `select_related`/`prefetch_related` throughout, a race-condition-safe
   `Product.adjust_stock()` using `F()`, an `annotate`+`aggregate` average
@@ -54,6 +54,11 @@ it got here).
   everywhere (web, API, export, all consistent), and an in-app
   notification system (its own `notifications` app, a navbar bell via a
   context processor) that alerts managers whenever a new order comes in.
+- **Security hardening**: secrets loaded from a gitignored `.env`
+  (`.env.example` documents every variable), production-only HTTPS/cookie/
+  HSTS settings, DRF API rate limiting (separate anon/user rates), and an
+  upload size limit on product images. `python manage.py check --deploy`
+  goes from 7 warnings to 0 with real production values set.
 
 > ⚠️ If you cloned/ran this project before Module 08, delete your local
 > `db.sqlite3` before migrating again — see the Module 08 lesson for why
@@ -71,9 +76,18 @@ venv\Scripts\Activate.ps1
 source venv/bin/activate
 
 pip install -r requirements.txt      # or requirements-dev.txt to include test tools
+cp .env.example .env                 # works with zero edits for local dev; fill in real
+                                      # values (SECRET_KEY, DEBUG=False, ALLOWED_HOSTS)
+                                      # before ever deploying this for real — see Module 15
 python manage.py migrate
 python manage.py createsuperuser
 python manage.py runserver
+```
+
+Check this project is actually deploy-safe before shipping it anywhere:
+
+```bash
+python manage.py check --deploy
 ```
 
 Run the test suite (no Redis or Celery worker needed — tasks run synchronously in tests):
@@ -116,9 +130,11 @@ project/atlas/
 ├── requirements-dev.txt  <- + pytest, pytest-django, factory-boy, coverage
 ├── pytest.ini
 ├── .coveragerc
+├── .env.example           <- every env var settings.py reads, with safe placeholders (.env itself is gitignored)
 ├── conftest.py            <- shared pytest fixtures (category, product, sales_rep_user, ...)
 ├── config/              <- the Django PROJECT: settings + root URL config
-│   └── celery.py           <- the Celery app (config_from_object + autodiscover_tasks)
+│   ├── celery.py           <- the Celery app (config_from_object + autodiscover_tasks)
+│   └── tests/               <- test_deploy_check.py (manage.py check --deploy)
 ├── accounts/             <- custom User model, signup/login/logout, roles/groups
 │   ├── models.py
 │   ├── forms.py
@@ -135,8 +151,9 @@ project/atlas/
 │   ├── cache.py              <- get_low_stock_count() (cached)
 │   ├── signals.py            <- invalidates the cache on Product save/delete
 │   ├── tasks.py               <- send_low_stock_report() (Celery Beat schedule)
+│   ├── validators.py          <- validate_image_size() (upload DoS guard)
 │   ├── factories.py
-│   └── tests/                <- test_models.py, test_views.py, test_api.py, test_query_optimization.py, test_tasks.py, test_uploads.py, test_export.py
+│   └── tests/                <- test_models.py, test_views.py, test_api.py, test_query_optimization.py, test_tasks.py, test_uploads.py, test_export.py, test_throttling.py
 ├── customers/            <- Customer (+ serializers.py, api_views.py, factories.py, tests/)
 ├── orders/               <- Order, OrderItem (+ serializers.py, api_views.py, factories.py, tests/)
 │   ├── signals.py           <- queues the confirmation email + manager notifications on order creation

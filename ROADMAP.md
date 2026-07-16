@@ -49,7 +49,7 @@ Check items off as you complete them. Progress is tracked here and in commit his
       Long-running work off the request/response cycle, scheduled jobs, async emails.
 - [x] **14 — Real-World Features**
       File/image uploads, PDF invoice generation, CSV/Excel export, search & filtering, notifications.
-- [ ] **15 — Security Best Practices**
+- [x] **15 — Security Best Practices**
       OWASP Top 10 in a Django context, settings hardening, secrets management.
 - [ ] **16 — Configuration, Docker & Deployment**
       Environment-based settings, Docker & docker-compose, PostgreSQL, Gunicorn/Nginx,

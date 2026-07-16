@@ -52,3 +52,25 @@ def test_api_serializer_exposes_image_url(api_client, admin_user, product):
     assert response.status_code == 200
     assert response.data["image"] is not None
     assert "api-product" in response.data["image"]
+
+
+def test_oversized_image_is_rejected(client, sales_rep_user, category, monkeypatch):
+    # Rather than uploading an actual multi-megabyte fixture file, shrink
+    # the limit itself so our real (tiny) test image now exceeds it —
+    # exercises the exact same validator with a file that's cheap to ship.
+    monkeypatch.setattr("catalog.validators.MAX_IMAGE_SIZE_BYTES", 10)
+    client.force_login(sales_rep_user)
+
+    response = client.post(
+        reverse("catalog:product_create"),
+        {
+            "name": "Too Big", "sku": "TB-001", "category": category.pk,
+            "price": "9.99", "cost_price": "4.00",
+            "quantity_in_stock": 5, "reorder_level": 1, "is_active": "on",
+            "image": _tiny_image(),
+        },
+    )
+
+    assert response.status_code == 200  # re-rendered with errors, not redirected
+    assert b"too large" in response.content
+    assert not Product.objects.filter(sku="TB-001").exists()

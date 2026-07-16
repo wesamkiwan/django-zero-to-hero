@@ -2,6 +2,8 @@ from django.db import models
 from django.db.models import F
 from django.urls import reverse
 
+from .validators import validate_image_size
+
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -64,7 +66,9 @@ class Product(models.Model):
     # ImageField with no file is stored as an empty string, not NULL, by
     # default; null=True lets a product genuinely have "no image" instead
     # of an empty-string placeholder.
-    image = models.ImageField(upload_to="products/", blank=True, null=True)
+    image = models.ImageField(
+        upload_to="products/", blank=True, null=True, validators=[validate_image_size]
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -15,23 +15,58 @@ import sys
 from pathlib import Path
 
 from celery.schedules import crontab
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Loads BASE_DIR/.env into os.environ, if that file exists — see Module 15.
+# .env itself is gitignored (never commit real secrets); .env.example
+# documents every variable this file reads, with safe placeholder values.
+# A real deployment (Module 16) sets these as actual environment
+# variables instead — load_dotenv() is a no-op if no .env file is found,
+# so this doesn't interfere with that.
+load_dotenv(BASE_DIR / ".env")
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# Hardcoding this is fine for now — we replace it with an environment
-# variable in Module 15/16 once we cover configuration & secrets properly.
-SECRET_KEY = 'django-insecure-_zq*!7m)0il*(txh(5en%c!#emx2y6q8r9f+jrjufk&8!6)#9v'
+# The hardcoded fallback keeps `runserver` working out of the box for
+# anyone who clones this repo without writing a .env file first — but
+# `manage.py check --deploy` (see the Module 15 lesson) specifically
+# flags this exact "django-insecure-" prefix as a real, live security
+# check (security.W009), precisely so nobody ships this fallback by accident.
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY", "django-insecure-_zq*!7m)0il*(txh(5en%c!#emx2y6q8r9f+jrjufk&8!6)#9v"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Defaults to True so local dev needs zero setup — Module 16's Docker
+# Compose config explicitly sets DEBUG=False in its environment instead
+# of relying on this default, which is exactly the kind of thing
+# check --deploy (security.W018) exists to catch if anyone forgets.
+DEBUG = os.environ.get("DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = []
+# Comma-separated in the env var (there's no list type in an env var),
+# e.g. ALLOWED_HOSTS=atlas.example,www.atlas.example
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get("ALLOWED_HOSTS", "").split(",") if h.strip()]
+
+if not DEBUG:
+    # These all assume the site is served over HTTPS — true of any real
+    # deployment, never true of plain local `runserver`, hence gating on
+    # DEBUG rather than setting them unconditionally.
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    # 1 year, the value Django's own docs use once you're confident HTTPS
+    # works site-wide — start much lower (e.g. 3600) the first time you
+    # enable HSTS on a real domain, since a mistake here is only fixable
+    # by waiting out the cache time in every visitor's browser.
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
 
 
 # Application definition
@@ -208,6 +243,20 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
+    # Throttling — Module 15. Without this, nothing stops a script from
+    # hammering /api/token/ trying passwords, or scraping the whole
+    # catalog in a tight loop. Two separate rates because an anonymous
+    # caller and an authenticated one are different risk levels — a
+    # logged-in user has already proven who they are, so they get a much
+    # higher ceiling than an anonymous one.
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "20/minute",
+        "user": "100/minute",
+    },
 }
 
 # Email — console backend prints "sent" emails to the terminal instead of
