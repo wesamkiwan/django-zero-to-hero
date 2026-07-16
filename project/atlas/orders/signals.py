@@ -1,6 +1,10 @@
+from django.contrib.auth import get_user_model
 from django.db import transaction
+from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
+from notifications.models import Notification
 
 from .models import Order
 from .tasks import send_order_confirmation_email
@@ -26,3 +30,24 @@ def queue_order_confirmation_email(sender, instance, created, **kwargs):
     # tasks via on_commit(): without it, a fast worker can beat an
     # in-progress transaction to the database and find nothing there yet.
     transaction.on_commit(lambda: send_order_confirmation_email.delay(instance.pk))
+
+
+@receiver(post_save, sender=Order)
+def notify_managers_of_new_order(sender, instance, created, **kwargs):
+    """Unlike the confirmation email, this doesn't need to wait for
+    OrderItems to exist (the message doesn't mention a total), and it's a
+    plain local DB write, not a slow external call — so it runs directly,
+    no Celery/on_commit needed."""
+    if not created:
+        return
+
+    User = get_user_model()
+    managers = User.objects.filter(Q(role=User.Role.MANAGER) | Q(is_superuser=True))
+    Notification.objects.bulk_create([
+        Notification(
+            recipient=manager,
+            message=f"New order #{instance.pk} placed by {instance.customer.full_name}.",
+            link=f"/admin/orders/order/{instance.pk}/change/",
+        )
+        for manager in managers
+    ])

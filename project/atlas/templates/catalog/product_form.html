@@ -12,7 +12,9 @@
 {% block content %}
     <h2>{% if is_create %}Add product{% else %}Edit {{ product.name }}{% endif %}</h2>
 
-    <form method="post" style="max-width: 560px;">
+    {# enctype is required for the browser to actually send file data — #}
+    {# without it, the "image" field silently submits as empty. #}
+    <form method="post" enctype="multipart/form-data" style="max-width: 560px;">
         {% csrf_token %}
 
         {% if form.non_field_errors %}

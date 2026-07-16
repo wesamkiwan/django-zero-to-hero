@@ -5,7 +5,7 @@ inventory management + CRM platform. This app evolves module by module;
 this README always reflects its *current* state (check git history for how
 it got here).
 
-## Current state (as of Module 13)
+## Current state (as of Module 14)
 
 - Project `config/`, apps: `accounts`, `pages`, `catalog`, `customers`, `orders`.
 - Real data model, backed by migrations:
@@ -31,7 +31,7 @@ it got here).
   permission rules as the web UI, token authentication (`/api/token/`), a
   writable nested `OrderSerializer` (create/update an order with its line
   items in one request), and a browsable API UI at `/api-auth/login/`.
-- **A real automated test suite**: 45 tests (pytest-django + factory_boy),
+- **A real automated test suite**: 68 tests (pytest-django + factory_boy),
   94% coverage — models, view permission gating, form/serializer
   validation, writable nested order API, query-count/caching proofs, and
   async task behavior. See `pytest.ini`, `conftest.py`, and each app's
@@ -47,6 +47,13 @@ it got here).
   the order's real total; a daily low-stock report runs on a
   Celery Beat schedule. Tests run task code synchronously
   (`CELERY_TASK_ALWAYS_EAGER`) with no Redis/worker needed for the suite.
+- **Real-world features**: product photo uploads (`ImageField` + Pillow),
+  on-demand PDF invoices per order (`reportlab`), CSV export of the
+  product list respecting its current search/category/stock filters (web
+  view + an admin bulk action), category/stock-status filtering
+  everywhere (web, API, export, all consistent), and an in-app
+  notification system (its own `notifications` app, a navbar bell via a
+  context processor) that alerts managers whenever a new order comes in.
 
 > ⚠️ If you cloned/ran this project before Module 08, delete your local
 > `db.sqlite3` before migrating again — see the Module 08 lesson for why
@@ -94,6 +101,9 @@ Then visit:
 - http://127.0.0.1:8000/admin/ — fully customized Django admin; add a user to the
   "Sales Team" group here to grant product management permissions
 - http://127.0.0.1:8000/dashboard/ — stats dashboard (requires login)
+- http://127.0.0.1:8000/products/export/ — CSV export of the (filtered) product list
+- http://127.0.0.1:8000/orders/&lt;id&gt;/invoice/ — PDF invoice download (sales rep/manager)
+- http://127.0.0.1:8000/notifications/ — in-app notifications (requires login)
 - http://127.0.0.1:8000/api/ — browsable REST API (all models)
 - http://127.0.0.1:8000/api/token/ — POST credentials to get an auth token
 
@@ -126,18 +136,27 @@ project/atlas/
 │   ├── signals.py            <- invalidates the cache on Product save/delete
 │   ├── tasks.py               <- send_low_stock_report() (Celery Beat schedule)
 │   ├── factories.py
-│   └── tests/                <- test_models.py, test_views.py, test_api.py, test_query_optimization.py, test_tasks.py
+│   └── tests/                <- test_models.py, test_views.py, test_api.py, test_query_optimization.py, test_tasks.py, test_uploads.py, test_export.py
 ├── customers/            <- Customer (+ serializers.py, api_views.py, factories.py, tests/)
 ├── orders/               <- Order, OrderItem (+ serializers.py, api_views.py, factories.py, tests/)
-│   ├── signals.py           <- queues the confirmation email on order creation
-│   └── tasks.py              <- send_order_confirmation_email()
+│   ├── signals.py           <- queues the confirmation email + manager notifications on order creation
+│   ├── tasks.py              <- send_order_confirmation_email()
+│   ├── views.py               <- order_invoice_pdf() (reportlab)
+│   └── urls.py
+├── notifications/        <- Notification model, navbar bell, staff alerts on new orders
+│   ├── models.py
+│   ├── views.py             <- NotificationListView, mark_read, mark_all_read
+│   ├── context_processors.py <- unread_notification_count in every template
+│   ├── factories.py
+│   └── tests/
 ├── api/                  <- just a URLconf: DefaultRouter wiring every ViewSet + token auth
 ├── templates/            <- project-wide templates
 │   ├── base.html           <- Bootstrap 5, auth-aware nav
 │   ├── registration/       <- login.html (Django's conventional path)
 │   ├── accounts/           <- signup.html
 │   ├── pages/               <- includes dashboard.html
-│   └── catalog/
+│   ├── catalog/
+│   └── notifications/        <- notification_list.html
 └── static/               <- project-wide static assets
     └── css/custom.css       <- brand overrides on top of Bootstrap
 ```

@@ -8,6 +8,16 @@ from customers.factories import CustomerFactory
 from orders.factories import OrderFactory, OrderItemFactory
 
 
+@pytest.fixture(autouse=True)
+def _tmp_media_root(settings, tmp_path):
+    # Without this, every test that saves a Product.image would write a
+    # real file into project/atlas/media/ — accumulating orphaned test
+    # images in a directory that's supposed to hold real uploads. The
+    # `settings` fixture reverts this automatically after each test; `tmp_path`
+    # is a fresh, auto-cleaned-up directory per test.
+    settings.MEDIA_ROOT = tmp_path
+
+
 @pytest.fixture
 def category(db):
     return CategoryFactory()

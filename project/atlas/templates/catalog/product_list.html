@@ -6,17 +6,35 @@
 {% block content %}
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="mb-0">Products</h2>
-        {% if perms.catalog.add_product %}
-            <a href="{% url 'catalog:product_create' %}" class="btn btn-primary">+ Add product</a>
-        {% endif %}
+        <div class="d-flex gap-2">
+            <a href="{% url 'catalog:product_export_csv' %}?{{ request.GET.urlencode }}" class="btn btn-outline-secondary">Export CSV</a>
+            {% if perms.catalog.add_product %}
+                <a href="{% url 'catalog:product_create' %}" class="btn btn-primary">+ Add product</a>
+            {% endif %}
+        </div>
     </div>
 
-    <form method="get" class="row g-2 mb-4" style="max-width: 400px;">
-        <div class="col-8">
+    <form method="get" class="row g-2 mb-4">
+        <div class="col-md-4">
             <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search products...">
         </div>
-        <div class="col-4">
-            <button type="submit" class="btn btn-outline-secondary w-100">Search</button>
+        <div class="col-md-3">
+            <select name="category" class="form-select">
+                <option value="">All categories</option>
+                {% for category in categories %}
+                    <option value="{{ category.pk }}" {% if category.pk|stringformat:"s" == selected_category %}selected{% endif %}>{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="stock" class="form-select">
+                <option value="">Any stock level</option>
+                <option value="low" {% if selected_stock == "low" %}selected{% endif %}>Low stock / needs reorder</option>
+                <option value="out" {% if selected_stock == "out" %}selected{% endif %}>Out of stock</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-outline-secondary w-100">Filter</button>
         </div>
     </form>
 
@@ -24,6 +42,9 @@
         {% for product in products %}
             <div class="col">
                 <div class="card product-card h-100">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 160px; object-fit: cover;">
+                    {% endif %}
                     <div class="card-body">
                         <h5 class="card-title">
                             <a href="{{ product.get_absolute_url }}" class="text-decoration-none">{{ product.name }}</a>
@@ -60,13 +81,13 @@
             <ul class="pagination">
                 {% if page_obj.has_previous %}
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">&laquo; Prev</a>
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_stock %}&stock={{ selected_stock }}{% endif %}">&laquo; Prev</a>
                     </li>
                 {% endif %}
                 <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
                 {% if page_obj.has_next %}
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Next &raquo;</a>
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_stock %}&stock={{ selected_stock }}{% endif %}">Next &raquo;</a>
                     </li>
                 {% endif %}
             </ul>

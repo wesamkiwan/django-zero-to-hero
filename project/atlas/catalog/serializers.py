@@ -36,7 +36,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "supplier",
             "tags", "tags_detail",
             "description", "price", "cost_price",
-            "quantity_in_stock", "reorder_level", "is_active",
+            "quantity_in_stock", "reorder_level", "is_active", "image",
             "in_stock", "needs_reorder",
             "created_at", "updated_at",
         ]

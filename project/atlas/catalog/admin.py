@@ -1,5 +1,9 @@
+import csv
+
 from django.contrib import admin
 from django.db.models import Count
+from django.http import HttpResponse
+from django.utils.html import format_html
 
 from .models import Category, Product, Supplier, Tag
 
@@ -46,10 +50,22 @@ def mark_inactive(modeladmin, request, queryset):
     modeladmin.message_user(request, f"{updated} product(s) marked inactive.")
 
 
+@admin.action(description="Export selected as CSV")
+def export_as_csv(modeladmin, request, queryset):
+    response = HttpResponse(content_type="text/csv")
+    response["Content-Disposition"] = 'attachment; filename="products.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(["SKU", "Name", "Category", "Price", "Quantity in stock"])
+    for product in queryset.select_related("category"):
+        writer.writerow([product.sku, product.name, product.category.name, product.price, product.quantity_in_stock])
+    return response
+
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = [
-        "name", "sku", "category", "supplier", "price",
+        "image_preview", "name", "sku", "category", "supplier", "price",
         "quantity_in_stock", "is_active", "reorder_flag",
     ]
     list_filter = ["category", "supplier", "is_active"]
@@ -57,8 +73,17 @@ class ProductAdmin(admin.ModelAdmin):
     list_editable = ["price", "is_active"]
     autocomplete_fields = ["category", "supplier"]
     filter_horizontal = ["tags"]
-    actions = [mark_active, mark_inactive]
+    actions = [mark_active, mark_inactive, export_as_csv]
 
     @admin.display(description="Reorder?", boolean=True)
     def reorder_flag(self, product):
         return product.needs_reorder()
+
+    @admin.display(description="Image")
+    def image_preview(self, product):
+        if not product.image:
+            return "—"
+        # format_html (not an f-string) escapes product.image.url for us —
+        # never build HTML with plain string interpolation, even for data
+        # that "should" be safe; format_html makes that the only option.
+        return format_html('<img src="{}" style="height: 40px;">', product.image.url)

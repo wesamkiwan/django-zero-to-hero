@@ -6,6 +6,7 @@ app_name = "catalog"
 
 urlpatterns = [
     path("", views.ProductListView.as_view(), name="product_list"),
+    path("export/", views.product_export_csv, name="product_export_csv"),
     path("create/", views.ProductCreateView.as_view(), name="product_create"),
     path("<int:pk>/", views.ProductDetailView.as_view(), name="product_detail"),
     path("<int:pk>/edit/", views.ProductUpdateView.as_view(), name="product_update"),

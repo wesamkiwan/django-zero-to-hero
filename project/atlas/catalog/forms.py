@@ -9,7 +9,7 @@ class ProductForm(forms.ModelForm):
         fields = [
             "name", "sku", "category", "supplier", "tags", "description",
             "price", "cost_price", "quantity_in_stock", "reorder_level",
-            "is_active",
+            "is_active", "image",
         ]
         widgets = {
             "description": forms.Textarea(attrs={"rows": 4}),

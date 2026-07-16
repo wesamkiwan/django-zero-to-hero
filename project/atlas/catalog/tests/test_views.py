@@ -1,7 +1,7 @@
 import pytest
 from django.urls import reverse
 
-from catalog.factories import ProductFactory
+from catalog.factories import CategoryFactory, ProductFactory
 from catalog.models import Product
 
 pytestmark = pytest.mark.django_db
@@ -26,6 +26,27 @@ def test_product_list_search_filters_by_name(client):
 
     assert b"Mechanical Keyboard" in response.content
     assert b"Wireless Mouse" not in response.content
+
+
+def test_product_list_filters_by_category(client, category, supplier):
+    other_category = CategoryFactory()
+    ProductFactory(name="In Category", category=category, supplier=supplier)
+    ProductFactory(name="Other Category", category=other_category, supplier=supplier)
+
+    response = client.get(reverse("catalog:product_list"), {"category": category.pk})
+
+    assert b"In Category" in response.content
+    assert b"Other Category" not in response.content
+
+
+def test_product_list_filters_by_low_stock(client):
+    ProductFactory(name="Running Low", quantity_in_stock=1, reorder_level=5)
+    ProductFactory(name="Well Stocked", quantity_in_stock=100, reorder_level=5)
+
+    response = client.get(reverse("catalog:product_list"), {"stock": "low"})
+
+    assert b"Running Low" in response.content
+    assert b"Well Stocked" not in response.content
 
 
 def test_product_detail_404_for_missing_product(client):

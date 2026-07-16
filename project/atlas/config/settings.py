@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'catalog',
     'customers',
     'orders',
+    'notifications',
 ]
 # Note: no 'api' entry here — api/ is just a URLconf package (a router +
 # urls.py), with no models/templates/admin of its own, so it doesn't need
@@ -83,6 +84,10 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # Makes {{ unread_notification_count }} available in every
+                # template (base.html's navbar bell) without every single
+                # view having to remember to pass it in manually.
+                'notifications.context_processors.unread_count',
             ],
         },
     },
@@ -153,6 +158,15 @@ STATIC_URL = 'static/'
 # Project-wide static assets (shared CSS/JS/images) live in BASE_DIR/static.
 # App-specific static files still auto-discover from each app's static/ folder.
 STATICFILES_DIRS = [BASE_DIR / 'static']
+
+# User-uploaded files (product images) — distinct from STATIC_*, which is
+# for files that ship WITH the code. MEDIA_ROOT is gitignored (see
+# .gitignore); config/urls.py serves MEDIA_URL only while DEBUG=True.
+# Module 16 replaces local disk storage with real object storage (S3 or
+# equivalent) for production, where the filesystem isn't persistent/shared
+# across deployments.
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/6.0/ref/models/fields/#default-auto-field

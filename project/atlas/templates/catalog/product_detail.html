@@ -7,6 +7,9 @@
     <p><a href="{% url 'catalog:product_list' %}">&larr; Back to products</a></p>
 
     <h2>{{ product.name }}</h2>
+    {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-thumbnail mb-2" style="max-width: 300px;">
+    {% endif %}
     <p class="fs-4 fw-bold text-warning-emphasis">{{ product.price|currency }}</p>
 
     <table class="table table-sm w-auto">

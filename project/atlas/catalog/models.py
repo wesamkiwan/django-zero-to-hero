@@ -60,6 +60,11 @@ class Product(models.Model):
     quantity_in_stock = models.PositiveIntegerField(default=0)
     reorder_level = models.PositiveIntegerField(default=5)
     is_active = models.BooleanField(default=True)
+    # blank=True (form-optional) AND null=True (DB-optional) — an
+    # ImageField with no file is stored as an empty string, not NULL, by
+    # default; null=True lets a product genuinely have "no image" instead
+    # of an empty-string placeholder.
+    image = models.ImageField(upload_to="products/", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

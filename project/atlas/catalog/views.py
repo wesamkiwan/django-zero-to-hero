@@ -1,12 +1,42 @@
+import csv
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.db.models import Q
-from django.http import HttpResponseRedirect
+from django.db.models import F, Q
+from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 
 from .forms import ProductForm
-from .models import Product
+from .models import Category, Product
+
+
+def _filter_products(request, qs):
+    """Shared by the product list page and the CSV export, so "export"
+    always means exactly "the products this same URL's filters currently
+    show" — one filtering rule, not two copies that can drift apart."""
+    query = request.GET.get("q", "").strip()
+    if query:
+        # Q lets you OR conditions together — a single filter() call only
+        # ever ANDs its arguments, so matching "the search term anywhere
+        # in name OR sku OR description" needs Q.
+        qs = qs.filter(
+            Q(name__icontains=query)
+            | Q(sku__icontains=query)
+            | Q(description__icontains=query)
+        )
+
+    category_id = request.GET.get("category", "").strip()
+    if category_id:
+        qs = qs.filter(category_id=category_id)
+
+    stock = request.GET.get("stock", "").strip()
+    if stock == "low":
+        qs = qs.filter(quantity_in_stock__lte=F("reorder_level"))
+    elif stock == "out":
+        qs = qs.filter(quantity_in_stock=0)
+
+    return qs
 
 
 class ProductListView(ListView):
@@ -16,22 +46,37 @@ class ProductListView(ListView):
 
     def get_queryset(self):
         qs = Product.objects.select_related("category", "supplier").filter(is_active=True)
-        query = self.request.GET.get("q", "").strip()
-        if query:
-            # Q lets you OR conditions together — a single filter() call
-            # only ever ANDs its arguments, so matching "the search term
-            # anywhere in name OR sku OR description" needs Q.
-            qs = qs.filter(
-                Q(name__icontains=query)
-                | Q(sku__icontains=query)
-                | Q(description__icontains=query)
-            )
-        return qs
+        return _filter_products(self.request, qs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["query"] = self.request.GET.get("q", "").strip()
+        context["categories"] = Category.objects.all()
+        context["selected_category"] = self.request.GET.get("category", "").strip()
+        context["selected_stock"] = self.request.GET.get("stock", "").strip()
         return context
+
+
+def product_export_csv(request):
+    """Exports exactly what the product list currently shows — same
+    search/category/stock filters, no pagination limit — as a CSV file.
+    A real-world staple: "give me this filtered view as a spreadsheet."
+    """
+    qs = _filter_products(
+        request, Product.objects.select_related("category", "supplier").filter(is_active=True)
+    )
+
+    response = HttpResponse(content_type="text/csv")
+    response["Content-Disposition"] = 'attachment; filename="products.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(["SKU", "Name", "Category", "Price", "Quantity in stock", "Needs reorder"])
+    for product in qs:
+        writer.writerow([
+            product.sku, product.name, product.category.name,
+            product.price, product.quantity_in_stock, product.needs_reorder(),
+        ])
+    return response
 
 
 class ProductDetailView(DetailView):

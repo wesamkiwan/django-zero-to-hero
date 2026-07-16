@@ -14,6 +14,8 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
@@ -25,7 +27,14 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
     path('products/', include('catalog.urls')),
+    path('orders/', include('orders.urls')),
+    path('notifications/', include('notifications.urls')),
     path('api/', include('api.urls')),
     path('api-auth/', include('rest_framework.urls')),  # browsable API login/logout
     path('', include('pages.urls')),
 ]
+
+if settings.DEBUG:
+    # Only for local dev — a real deployment serves MEDIA_URL via the web
+    # server (Nginx) or object storage directly, never through Django.
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -39,6 +39,14 @@
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
                         <li class="nav-item">
+                            <a class="nav-link{% if 'notifications:' in request.resolver_match.view_name %} active{% endif %}" href="{% url 'notifications:list' %}">
+                                Notifications
+                                {% if unread_notification_count %}
+                                    <span class="badge bg-danger">{{ unread_notification_count }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <span class="navbar-text text-warning me-2">{{ user.username }} ({{ user.get_role_display }})</span>
                         </li>
                         <li class="nav-item">
