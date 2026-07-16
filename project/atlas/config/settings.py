@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Third-party apps
+    'rest_framework',
+    'rest_framework.authtoken',
     # Local apps
     'accounts',
     'pages',
@@ -46,6 +49,10 @@ INSTALLED_APPS = [
     'customers',
     'orders',
 ]
+# Note: no 'api' entry here — api/ is just a URLconf package (a router +
+# urls.py), with no models/templates/admin of its own, so it doesn't need
+# to be a registered Django app. Every model it exposes already belongs to
+# an app that IS registered (catalog, customers, orders).
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -151,4 +158,24 @@ from django.contrib.messages import constants as message_constants
 
 MESSAGE_TAGS = {
     message_constants.ERROR: "danger",
+}
+
+# Django REST Framework — see Module 10.
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        # SessionAuthentication: lets you browse the API while logged into
+        # the site (powers the browsable API UI at /api/).
+        "rest_framework.authentication.SessionAuthentication",
+        # TokenAuthentication: what a real API client (mobile app, another
+        # service, a script) uses instead — a header, not a browser cookie.
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+    # Mirrors the web UI's default: read is public, write requires the
+    # same Django model permissions the admin/web views already enforce
+    # (e.g. catalog.add_product) — one permission system, two frontends.
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
+    ],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
 }

@@ -25,5 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
     path('products/', include('catalog.urls')),
+    path('api/', include('api.urls')),
+    path('api-auth/', include('rest_framework.urls')),  # browsable API login/logout
     path('', include('pages.urls')),
 ]

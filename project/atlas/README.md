@@ -5,7 +5,7 @@ inventory management + CRM platform. This app evolves module by module;
 this README always reflects its *current* state (check git history for how
 it got here).
 
-## Current state (as of Module 09)
+## Current state (as of Module 10)
 
 - Project `config/`, apps: `accounts`, `pages`, `catalog`, `customers`, `orders`.
 - Real data model, backed by migrations:
@@ -26,6 +26,11 @@ it got here).
   `custom.css` layered on top, a real `/dashboard/` page (stat cards, low
   stock alert, recent orders) for logged-in users, and custom template
   tags/filters (`currency`, `low_stock_count`, `add_class`, `widget_type`).
+- **A full JSON REST API** at `/api/` (Django REST Framework):
+  categories/suppliers/tags/products/customers/orders, with the same
+  permission rules as the web UI, token authentication (`/api/token/`), a
+  writable nested `OrderSerializer` (create/update an order with its line
+  items in one request), and a browsable API UI at `/api-auth/login/`.
 
 > ⚠️ If you cloned/ran this project before Module 08, delete your local
 > `db.sqlite3` before migrating again — see the Module 08 lesson for why
@@ -56,6 +61,8 @@ Then visit:
 - http://127.0.0.1:8000/admin/ — fully customized Django admin; add a user to the
   "Sales Team" group here to grant product management permissions
 - http://127.0.0.1:8000/dashboard/ — stats dashboard (requires login)
+- http://127.0.0.1:8000/api/ — browsable REST API (all models)
+- http://127.0.0.1:8000/api/token/ — POST credentials to get an auth token
 
 ## Structure
 
@@ -72,9 +79,12 @@ project/atlas/
 ├── pages/                <- Home/About/Dashboard
 │   └── templatetags/       <- form_extras.py (add_class, widget_type)
 ├── catalog/              <- Category, Supplier, Tag, Product + permission-gated CRUD
-│   └── templatetags/       <- catalog_extras.py (currency, low_stock_count)
-├── customers/            <- Customer
-├── orders/               <- Order, OrderItem
+│   ├── templatetags/       <- catalog_extras.py (currency, low_stock_count)
+│   ├── serializers.py       <- DRF serializers
+│   └── api_views.py         <- DRF ViewSets
+├── customers/            <- Customer (+ serializers.py, api_views.py)
+├── orders/               <- Order, OrderItem (+ serializers.py, api_views.py — writable nested)
+├── api/                  <- just a URLconf: DefaultRouter wiring every ViewSet + token auth
 ├── templates/            <- project-wide templates
 │   ├── base.html           <- Bootstrap 5, auth-aware nav
 │   ├── registration/       <- login.html (Django's conventional path)

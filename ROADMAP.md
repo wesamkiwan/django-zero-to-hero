@@ -38,7 +38,7 @@ Check items off as you complete them. Progress is tracked here and in commit his
       (staff / manager / sales rep / customer) for Atlas.
 - [x] **09 — Templates & Frontend Polish**
       Template inheritance, custom template tags/filters, Bootstrap integration, dashboards.
-- [ ] **10 — Django REST Framework: Building APIs**
+- [x] **10 — Django REST Framework: Building APIs**
       Serializers, viewsets, routers, authentication (token/JWT), permissions, pagination.
       Atlas gets a full REST API.
 - [ ] **11 — Testing**
