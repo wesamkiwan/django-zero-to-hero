@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlas Store — Preview</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container header-row">
+            <a href="#" class="logo">Atlas<span>.</span></a>
+            <nav>
+                <a href="#">Products</a>
+                <a href="#">Customers</a>
+                <a href="#">Orders</a>
+                <a href="#">Dashboard</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Everything your store needs, in one place.</h1>
+            <p>Inventory, customers, and sales — this static page is the design
+               target for the real Django templates we build starting Module 03.</p>
+        </div>
+    </section>
+
+    <main class="container">
+        <h2>Featured products</h2>
+
+        <div class="product-grid">
+            <article class="product-card">
+                <div class="product-image" aria-hidden="true">📦</div>
+                <h3>Mechanical Keyboard</h3>
+                <p class="price">$79.99</p>
+                <p class="stock">12 in stock</p>
+                <button type="button">Add to order</button>
+            </article>
+
+            <article class="product-card">
+                <div class="product-image" aria-hidden="true">🖱️</div>
+                <h3>Wireless Mouse</h3>
+                <p class="price">$29.99</p>
+                <p class="stock">34 in stock</p>
+                <button type="button">Add to order</button>
+            </article>
+
+            <article class="product-card">
+                <div class="product-image" aria-hidden="true">🖥️</div>
+                <h3>27&Prime; Monitor</h3>
+                <p class="price">$249.00</p>
+                <p class="stock out">Out of stock</p>
+                <button type="button" disabled>Add to order</button>
+            </article>
+        </div>
+
+        <h2>Quick contact form</h2>
+        <form class="contact-form" action="#" method="post">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="4"></textarea>
+
+            <button type="submit">Send</button>
+        </form>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2026 Atlas Store &mdash; built while learning Django.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

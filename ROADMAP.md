@@ -18,7 +18,7 @@ Check items off as you complete them. Progress is tracked here and in commit his
       What software/web engineering actually is, how the web works at a high level,
       professional dev environment (Python, venv, VS Code, Git), and the OOP concepts
       Django leans on constantly.
-- [ ] **02 — Web & HTTP Fundamentals + HTML/CSS Basics**
+- [x] **02 — Web & HTTP Fundamentals + HTML/CSS Basics**
       The request/response cycle, HTTP methods & status codes, cookies/sessions,
       enough HTML/CSS to build real pages.
 - [ ] **03 — Django Fundamentals: Projects, Apps, URLs, Views, Templates**
