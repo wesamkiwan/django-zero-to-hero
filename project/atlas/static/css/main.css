@@ -36,6 +36,18 @@ body {
 .message-warning { background: #fff2cf; color: #8a6300; }
 .message-info    { background: #dbe9ff; color: #1c4a99; }
 
+.pagination {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
+
+.pagination a {
+    color: #1a1a2e;
+}
+
 .search-form {
     display: flex;
     gap: 8px;

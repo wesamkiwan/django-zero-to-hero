@@ -5,7 +5,7 @@ inventory management + CRM platform. This app evolves module by module;
 this README always reflects its *current* state (check git history for how
 it got here).
 
-## Current state (as of Module 06)
+## Current state (as of Module 07)
 
 - Project `config/`, apps: `pages`, `catalog`, `customers`, `orders`.
 - Real data model, backed by migrations:
@@ -14,10 +14,11 @@ it got here).
   - `orders`: `Order`, `OrderItem` (FK across all three apps)
 - Fully customized Django admin for every model (search, filters, inlines,
   bulk actions, autocomplete, branded as "Atlas Administration").
-- **`catalog` now owns full public-facing product CRUD**: list (with search),
-  detail, create, update, delete — hand-built function-based views +
-  `ProductForm` (with field-level and cross-field validation) at `/products/`.
-  `pages` shrank back down to just Home/About.
+- **`catalog` product CRUD is now built on Django's generic class-based
+  views** (`ListView`/`DetailView`/`CreateView`/`UpdateView`/`DeleteView`)
+  at `/products/`, with search, pagination, and validation — refactored
+  from Module 06's hand-written function-based views with no template or
+  URL changes.
 - No authentication/roles yet — everyone can create/edit/delete products
   right now. That's Module 08.
 
@@ -57,7 +58,7 @@ project/atlas/
 ├── catalog/              <- Category, Supplier, Tag, Product + full product CRUD
 │   ├── models.py
 │   ├── forms.py           <- ProductForm (ModelForm + custom validation)
-│   ├── views.py            <- product_list/detail/create/update/delete
+│   ├── views.py            <- ListView/DetailView/CreateView/UpdateView/DeleteView
 │   └── urls.py
 ├── customers/            <- Customer
 ├── orders/               <- Order, OrderItem

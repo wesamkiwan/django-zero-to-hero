@@ -1,61 +1,78 @@
 from django.contrib import messages
-from django.shortcuts import get_object_or_404, redirect, render
+from django.http import HttpResponseRedirect
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 
 from .forms import ProductForm
 from .models import Product
 
 
-def product_list(request):
-    products = Product.objects.filter(is_active=True)
+class ProductListView(ListView):
+    model = Product
+    context_object_name = "products"   # default would be "product_list" — kept
+    paginate_by = 12                    # free pagination, no hand-written logic
 
-    query = request.GET.get("q", "").strip()
-    if query:
-        products = products.filter(name__icontains=query)
+    def get_queryset(self):
+        qs = Product.objects.filter(is_active=True)
+        query = self.request.GET.get("q", "").strip()
+        if query:
+            qs = qs.filter(name__icontains=query)
+        return qs
 
-    context = {"products": products, "query": query}
-    return render(request, "catalog/product_list.html", context)
-
-
-def product_detail(request, pk):
-    product = get_object_or_404(Product, pk=pk)
-    return render(request, "catalog/product_detail.html", {"product": product})
-
-
-def product_create(request):
-    if request.method == "POST":
-        form = ProductForm(request.POST)
-        if form.is_valid():
-            product = form.save()
-            messages.success(request, f'"{product.name}" was created.')
-            return redirect("catalog:product_detail", pk=product.pk)
-    else:
-        form = ProductForm()
-
-    return render(request, "catalog/product_form.html", {"form": form, "is_create": True})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["query"] = self.request.GET.get("q", "").strip()
+        return context
 
 
-def product_update(request, pk):
-    product = get_object_or_404(Product, pk=pk)
-
-    if request.method == "POST":
-        form = ProductForm(request.POST, instance=product)
-        if form.is_valid():
-            form.save()
-            messages.success(request, f'"{product.name}" was updated.')
-            return redirect("catalog:product_detail", pk=product.pk)
-    else:
-        form = ProductForm(instance=product)
-
-    return render(request, "catalog/product_form.html", {"form": form, "is_create": False, "product": product})
+class ProductDetailView(DetailView):
+    model = Product
+    # context_object_name not needed: DetailView already provides both
+    # "object" and "product" (the model name, lowercased) by default —
+    # which is exactly what product_detail.html already expects.
 
 
-def product_delete(request, pk):
-    product = get_object_or_404(Product, pk=pk)
+class ProductCreateView(CreateView):
+    model = Product
+    form_class = ProductForm
+    # success_url not set: CreateView falls back to self.object.get_absolute_url()
+    # automatically — the exact same redirect target the FBV version used.
 
-    if request.method == "POST":
-        name = product.name
-        product.delete()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["is_create"] = True
+        return context
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, f'"{self.object.name}" was created.')
+        return response
+
+
+class ProductUpdateView(UpdateView):
+    model = Product
+    form_class = ProductForm
+    # Same story: no success_url needed, get_absolute_url() covers it.
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["is_create"] = False
+        return context
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, f'"{self.object.name}" was updated.')
+        return response
+
+
+class ProductDeleteView(DeleteView):
+    model = Product
+    success_url = reverse_lazy("catalog:product_list")
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        name = self.object.name
+        success_url = self.get_success_url()
+        self.object.delete()
         messages.success(request, f'"{name}" was deleted.')
-        return redirect("catalog:product_list")
-
-    return render(request, "catalog/product_confirm_delete.html", {"product": product})
+        return HttpResponseRedirect(success_url)

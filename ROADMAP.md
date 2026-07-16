@@ -31,7 +31,7 @@ Check items off as you complete them. Progress is tracked here and in commit his
       Customizing ModelAdmin, inlines, list filters/search, actions, admin permissions.
 - [x] **06 — Forms & Function-Based Views (CRUD)**
       Forms, ModelForms, validation, CSRF, building full CRUD by hand.
-- [ ] **07 — Class-Based Views & Generic Views**
+- [x] **07 — Class-Based Views & Generic Views**
       ListView/DetailView/CreateView/UpdateView/DeleteView, mixins, when to use CBVs vs FBVs.
 - [ ] **08 — Authentication, Authorization & Permissions**
       Login/logout/signup, custom User model, groups & permissions, role-based access
