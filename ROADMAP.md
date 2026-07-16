@@ -51,7 +51,7 @@ Check items off as you complete them. Progress is tracked here and in commit his
       File/image uploads, PDF invoice generation, CSV/Excel export, search & filtering, notifications.
 - [x] **15 — Security Best Practices**
       OWASP Top 10 in a Django context, settings hardening, secrets management.
-- [ ] **16 — Configuration, Docker & Deployment**
+- [x] **16 — Configuration, Docker & Deployment**
       Environment-based settings, Docker & docker-compose, PostgreSQL, Gunicorn/Nginx,
       CI/CD with GitHub Actions, deploying Atlas live.
 - [ ] **17 — Git/Team Workflow, System Design & Job Readiness (Capstone)**

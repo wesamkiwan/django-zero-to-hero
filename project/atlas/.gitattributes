@@ -1,0 +1,8 @@
+# Without this, a Windows checkout (core.autocrlf=true, the default this
+# whole course has been built under) converts these to CRLF line
+# endings — which breaks their #!/bin/sh shebang inside the Linux
+# container with a "bad interpreter" error that has nothing to do with
+# anything actually wrong in the script itself. Force LF regardless of
+# the checking-out machine's OS or git config.
+*.sh text eol=lf
+Dockerfile text eol=lf

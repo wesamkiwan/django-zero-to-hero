@@ -5,7 +5,7 @@ inventory management + CRM platform. This app evolves module by module;
 this README always reflects its *current* state (check git history for how
 it got here).
 
-## Current state (as of Module 15)
+## Current state (as of Module 16)
 
 - Project `config/`, apps: `accounts`, `pages`, `catalog`, `customers`, `orders`.
 - Real data model, backed by migrations:
@@ -31,11 +31,11 @@ it got here).
   permission rules as the web UI, token authentication (`/api/token/`), a
   writable nested `OrderSerializer` (create/update an order with its line
   items in one request), and a browsable API UI at `/api-auth/login/`.
-- **A real automated test suite**: 73 tests (pytest-django + factory_boy),
+- **A real automated test suite**: 75 tests (pytest-django + factory_boy),
   94% coverage — models, view permission gating, form/serializer
   validation, writable nested order API, query-count/caching proofs,
-  async task behavior, and security settings. See `pytest.ini`,
-  `conftest.py`, and each app's `factories.py`/`tests/`.
+  async task behavior, and security/deployment settings. See
+  `pytest.ini`, `conftest.py`, and each app's `factories.py`/`tests/`.
 - **Query optimization & caching**: `Q`-based multi-field search,
   `select_related`/`prefetch_related` throughout, a race-condition-safe
   `Product.adjust_stock()` using `F()`, an `annotate`+`aggregate` average
@@ -59,6 +59,14 @@ it got here).
   HSTS settings, DRF API rate limiting (separate anon/user rates), and an
   upload size limit on product images. `python manage.py check --deploy`
   goes from 7 warnings to 0 with real production values set.
+- **Docker & deployment**: a `Dockerfile` (Gunicorn) + `docker-compose.yml`
+  running Atlas as five real services — Postgres, Redis, `web`, Celery
+  `worker`, Celery `beat` — with Nginx in front serving static/media
+  directly and reverse-proxying everything else. `DATABASES`/`STORAGES`
+  switch from SQLite/local-disk to Postgres/S3 on the presence of an env
+  var, same pattern as Module 15's secrets. GitHub Actions CI
+  (`.github/workflows/ci.yml`) runs the full suite against a real
+  Postgres service container on every push, then build-tests the image.
 
 > ⚠️ If you cloned/ran this project before Module 08, delete your local
 > `db.sqlite3` before migrating again — see the Module 08 lesson for why
@@ -107,6 +115,21 @@ celery -A config worker --loglevel=info    # add --pool=solo on Windows
 celery -A config beat --loglevel=info
 ```
 
+### Run with Docker instead
+
+```bash
+cp .env.example .env
+# edit .env: fill in POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD —
+# the Postgres image refuses to start with a blank password.
+docker compose up --build
+```
+
+Runs the full stack — Postgres, Redis, Gunicorn, Celery worker, Celery
+beat, Nginx — at http://localhost:8000/. See Module 16's lesson for how
+each piece fits together, and for the one Windows-specific gotcha
+(`.gitattributes` forcing LF line endings on `docker-entrypoint.sh`) that
+made this actually work from this repo's own dev environment.
+
 Then visit:
 - http://127.0.0.1:8000/ — home
 - http://127.0.0.1:8000/accounts/signup/ — create an account (defaults to Customer role)
@@ -131,10 +154,15 @@ project/atlas/
 ├── pytest.ini
 ├── .coveragerc
 ├── .env.example           <- every env var settings.py reads, with safe placeholders (.env itself is gitignored)
+├── .gitattributes          <- forces LF on .sh/Dockerfile regardless of checkout OS
+├── Dockerfile
+├── docker-entrypoint.sh    <- wait-for-Postgres, migrate, collectstatic, then exec the real command
+├── docker-compose.yml      <- db, redis, web, worker, beat, nginx
+├── nginx/default.conf
 ├── conftest.py            <- shared pytest fixtures (category, product, sales_rep_user, ...)
 ├── config/              <- the Django PROJECT: settings + root URL config
 │   ├── celery.py           <- the Celery app (config_from_object + autodiscover_tasks)
-│   └── tests/               <- test_deploy_check.py (manage.py check --deploy)
+│   └── tests/               <- test_deploy_check.py, test_database_config.py
 ├── accounts/             <- custom User model, signup/login/logout, roles/groups
 │   ├── models.py
 │   ├── forms.py

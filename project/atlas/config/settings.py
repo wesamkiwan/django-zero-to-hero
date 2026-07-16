@@ -134,12 +134,29 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# SQLite by default — zero setup for `runserver`/pytest, exactly like
+# every earlier module. Module 16's docker-compose.yml sets POSTGRES_DB
+# (and friends) for every container it starts, which switches this to
+# the real PostgreSQL the Docker Compose stack runs — same settings.py,
+# no code change needed to move from "just Python" to "the full stack."
+if os.environ.get('POSTGRES_DB'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ['POSTGRES_DB'],
+            'USER': os.environ.get('POSTGRES_USER', 'postgres'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD', ''),
+            'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
+            'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Caching — see Module 12. LocMemCache lives inside this one process, which
 # is fine for local dev and for this course, but NOT for a real multi-process
@@ -194,14 +211,37 @@ STATIC_URL = 'static/'
 # App-specific static files still auto-discover from each app's static/ folder.
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
+# Where `collectstatic` gathers every static file to, ready for Nginx (or
+# a CDN) to serve directly — see Dockerfile/docker-entrypoint.sh. Not
+# used at all by plain `runserver`, which serves STATICFILES_DIRS
+# straight from source; only collectstatic (real deployments) needs this.
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 # User-uploaded files (product images) — distinct from STATIC_*, which is
 # for files that ship WITH the code. MEDIA_ROOT is gitignored (see
 # .gitignore); config/urls.py serves MEDIA_URL only while DEBUG=True.
-# Module 16 replaces local disk storage with real object storage (S3 or
-# equivalent) for production, where the filesystem isn't persistent/shared
-# across deployments.
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Real object storage (S3 or an S3-compatible service like MinIO)
+# instead of local disk — a container's local filesystem is ephemeral
+# and NOT shared between replicas, so an image uploaded to one web
+# container wouldn't exist on another, and would vanish entirely on
+# redeploy. Same pattern as DATABASES above: falls back to local disk
+# (Django's own STORAGES default) when the env var isn't set, so this
+# course's docker-compose.yml (which doesn't require a real AWS account)
+# still works out of the box.
+if os.environ.get('AWS_STORAGE_BUCKET_NAME'):
+    STORAGES = {
+        "default": {"BACKEND": "storages.backends.s3.S3Storage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    }
+    AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
+    AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME', 'us-east-1')
+    # AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY deliberately NOT read into
+    # Django settings here — boto3 (which django-storages delegates to)
+    # already finds credentials itself, via its own standard env vars or
+    # an IAM role, without Atlas needing to plumb them through twice.
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/6.0/ref/models/fields/#default-auto-field

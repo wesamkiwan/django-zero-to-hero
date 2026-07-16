@@ -5,3 +5,7 @@ redis==8.0.1
 Pillow==11.1.0
 reportlab==4.3.0
 python-dotenv==1.0.1
+psycopg2-binary==2.9.10
+gunicorn==23.0.0
+django-storages==1.14.4
+boto3==1.35.99
